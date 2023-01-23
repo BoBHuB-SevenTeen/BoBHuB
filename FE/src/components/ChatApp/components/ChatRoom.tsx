@@ -1,5 +1,4 @@
-import styled from 'styled-components';
-import { Title } from './chatStyle';
+import { Title } from '../styles/chatStyle';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { SocketContext } from '../../../socket/SocketContext';
@@ -8,37 +7,7 @@ import type { RootState } from '../../../store/store';
 import ChatMessage from './ChatMessage';
 import { setLog } from '../chatAppApi';
 import { MessageInfo } from '../chatAppApi';
-
-const InputContainer = styled.div`
-  display: flex;
-  position: absolute;
-  align-items: center;
-  bottom: 10px;
-  left: 10px;
-`;
-
-const TextContainer = styled.div`
-  background-color: whitesmoke;
-  width: inherit;
-  height: 330px;
-  padding: 10px 10px 10px 0;
-
-  overflow: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  .labelName {
-    font-size: 10px;
-    margin-left: 10px;
-  }
-`;
-
-const Container = styled.div`
-  background-color: whitesmoke;
-  height: 420px;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-`;
+import * as S from '../styles/chatRoomStyle';
 
 interface ChatRoomProps {
   roomKey: string;
@@ -100,13 +69,13 @@ const ChatRoom = ({ roomKey }: ChatRoomProps) => {
     <>
       <form onSubmit={sendMessage}>
         <Title>{roomName}</Title>
-        <Container>
-          <TextContainer ref={scrollRef}>
+        <S.Container>
+          <S.TextContainer ref={scrollRef}>
             {messages.map((messageInfo: MessageInfo, idx: number) => (
               <ChatMessage messageInfo={messageInfo} key={`${messageInfo.message}${idx}`} />
             ))}
-          </TextContainer>
-          <InputContainer>
+          </S.TextContainer>
+          <S.InputContainer>
             <TextField
               hiddenLabel
               id="filled-basic"
@@ -130,8 +99,8 @@ const ChatRoom = ({ roomKey }: ChatRoomProps) => {
               onClick={sendMessage}>
               전송
             </Button>
-          </InputContainer>
-        </Container>
+          </S.InputContainer>
+        </S.Container>
       </form>
     </>
   );

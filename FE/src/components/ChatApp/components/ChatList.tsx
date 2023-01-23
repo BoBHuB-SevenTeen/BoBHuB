@@ -1,26 +1,10 @@
 import { useEffect, useState, useContext } from 'react';
-import styled from 'styled-components';
-import { TextCss, Title } from './chatStyle';
 import { SocketContext } from '../../../socket/SocketContext';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import type { Party } from '../../../pages/MainPage/Type';
-
-const ChatContainer = styled.div`
-  overflow: auto;
-  height: 400px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const CursorDiv = styled.div`
-  position: relative;
-  cursor: pointer;
-  font-size: 15px;
-  ${TextCss}
-`;
+import * as S from '../styles/chatListStyle';
+import { Title } from '../styles/chatStyle';
 
 interface ChatListProps {
   moveRoom: (x: string) => void;
@@ -49,25 +33,25 @@ const ChatList = ({ moveRoom }: ChatListProps) => {
   return (
     <>
       <Title>Chat Lists</Title>
-      <ChatContainer>
+      <S.ChatContainer>
         {!isLogin ? (
-          <CursorDiv>"로그인을 해주세요"</CursorDiv>
+          <S.CursorDiv>"로그인을 해주세요"</S.CursorDiv>
         ) : completedParty.length === 0 ? (
-          <CursorDiv>생성된 채팅방이 없습니다.</CursorDiv>
+          <S.CursorDiv>생성된 채팅방이 없습니다.</S.CursorDiv>
         ) : (
           completedParty.map((party) => (
             <>
-              <CursorDiv
+              <S.CursorDiv
                 onClick={handleMove}
                 key={party.partyId}
                 data-roomname={party.name}
                 data-partyid={party.partyId}>
                 {party.name}
-              </CursorDiv>
+              </S.CursorDiv>
             </>
           ))
         )}
-      </ChatContainer>
+      </S.ChatContainer>
     </>
   );
 };

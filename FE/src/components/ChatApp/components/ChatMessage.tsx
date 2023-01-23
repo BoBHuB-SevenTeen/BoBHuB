@@ -1,35 +1,7 @@
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { RootState } from '../../../store/store';
 import { MessageInfo } from '../chatAppApi';
-
-const OtherMessage = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-left: 5px;
-`;
-
-const MyMessage = styled(OtherMessage)`
-  justify-content: flex-end;
-`;
-
-const TextWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TextBlock = styled.span`
-  display: inline-block;
-  background-color: ${({ theme }) => theme.colors.main};
-  color: ${({ theme }) => theme.font.color.black};
-  font-size: 15px;
-  padding: 8px;
-  margin: 5px;
-  border-radius: 12px;
-  max-width: 172px;
-  word-break: break-all;
-`;
+import * as S from '../styles/chatMessageStyle';
 
 interface ChatMessageProps {
   messageInfo: MessageInfo;
@@ -41,23 +13,23 @@ const ChatMessage = ({ messageInfo: { userId, userName, message } }: ChatMessage
   return (
     <>
       {userId !== currentUserId ? (
-        <OtherMessage>
-          <TextWrapper>
+        <S.OtherMessage>
+          <S.TextWrapper>
             {userId !== 0 && userId !== currentUserId && (
               <span className="labelName">{userName}</span>
             )}
-            {<TextBlock>{message}</TextBlock>}
-          </TextWrapper>
-        </OtherMessage>
+            {<S.TextBox>{message}</S.TextBox>}
+          </S.TextWrapper>
+        </S.OtherMessage>
       ) : (
-        <MyMessage>
-          <TextWrapper>
+        <S.MyMessage>
+          <S.TextWrapper>
             {userId !== 0 && userId !== currentUserId && (
               <span className="labelName">{userName}</span>
             )}
-            {<TextBlock>{message}</TextBlock>}
-          </TextWrapper>
-        </MyMessage>
+            {<S.TextBox>{message}</S.TextBox>}
+          </S.TextWrapper>
+        </S.MyMessage>
       )}
     </>
   );
