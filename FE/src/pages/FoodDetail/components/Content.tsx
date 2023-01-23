@@ -1,93 +1,12 @@
-import styled from 'styled-components';
-import { Card, Button } from '@mui/material';
 import SelectTags from './SelectTags';
 import { useState, useContext, useEffect } from 'react';
-import { FlexContainer } from '../../../styles/GlobalStyle';
 import React from 'react';
 import { postParty } from '../foodDetailApi';
 import { SocketContext } from '../../../socket/SocketContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 import { Shops } from '../../../type/shopType';
-
-const ContentContainer = styled(FlexContainer)`
-  flex-direction: column;
-  width: 60vw;
-  justify-content: flex-start;
-  margin-bottom: 70px;
-`;
-
-const MenuContainer = styled(FlexContainer)`
-  width: inherit;
-  margin-top: 40px;
-  align-items: flex-start;
-  justify-content: space-between;
-  .description {
-    font-size: 1.5rem;
-  }
-`;
-
-const TitleContainer = styled(FlexContainer)`
-  width: inherit;
-  justify-content: space-between;
-  padding: 20px 0;
-  border-bottom: 0.5px solid black;
-  height: 15%;
-`;
-
-const Title = styled.div`
-  font-size: 2.5rem;
-  margin-left: 50px;
-`;
-
-type MenuCardProps = {
-  width: string;
-  size: string;
-};
-
-const MenuCard = styled(Card)<MenuCardProps>`
-  width: ${(props) => props.width};
-  font-size: ${(props) => props.size};
-  padding: 20px;
-  margin-left: 30px;
-  font-size: 20px;
-  flex: 2;
-  p {
-    margin-bottom: 20px;
-  }
-`;
-
-const ATag = styled.a`
-  text-decoration: none;
-  color: #1e1f21;
-  font-size: 1.2rem;
-  position: relative;
-  &:hover {
-    color: ${({ theme }) => theme.colors.main};
-  }
-  &:before {
-    content: ' ';
-    position: absolute;
-    background-color: black;
-    height: 1px;
-    width: 0;
-    transition: 0.5s;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  &:hover:before {
-    width: 100%;
-  }
-`;
-
-const SelectContainer = styled.div`
-  height: inherit;
-`;
-
-const LikeButton = styled(Button)`
-  width: 110px;
-`;
+import * as S from '../styles/contentStyle';
 
 interface Contentype {
   shop: Shops;
@@ -143,45 +62,45 @@ const Content = ({ shop }: Contentype) => {
   };
 
   return (
-    <ContentContainer>
-      <TitleContainer>
-        <Title>
+    <S.ContentContainer>
+      <S.TitleContainer>
+        <S.Title>
           {shop.name}({shop.category})
-        </Title>
+        </S.Title>
         {!gathering && !isJoined && (
-          <LikeButton
+          <S.LikeButton
             variant="contained"
             onClick={handleClick}
             sx={{
               fontSize: '20px',
               marginRight: '30px',
-            }}>{`모임 생성`}</LikeButton>
+            }}>{`모임 생성`}</S.LikeButton>
         )}
         {gathering && !isJoined && (
-          <LikeButton
+          <S.LikeButton
             variant="contained"
             onClick={() => clickJoinButton(currentParty?.partyId as number)}
             sx={{
               fontSize: '20px',
               marginRight: '30px',
-            }}>{`모임 참여`}</LikeButton>
+            }}>{`모임 참여`}</S.LikeButton>
         )}
         {isJoined && <p>참여중</p>}
-      </TitleContainer>
+      </S.TitleContainer>
 
-      <MenuContainer>
-        <MenuCard size={'15px'} width={'20vw'}>
+      <S.MenuContainer>
+        <S.MenuCard size={'15px'} width={'20vw'}>
           <p className="description">{shop.description}</p>
           <p>{`거리 : 걸어서 ${shop.distance}분 거리`}</p>
-          <ATag href={`${BASE_URL}${shop.address}`} target="_blank" rel="noreferrer">
+          <S.ATag href={`${BASE_URL}${shop.address}`} target="_blank" rel="noreferrer">
             지도 보기
-          </ATag>
-        </MenuCard>
-        <SelectContainer>
+          </S.ATag>
+        </S.MenuCard>
+        <S.SelectContainer>
           <SelectTags type={'모집인원'} value={partyLimit} setValue={setpartyLimit} />
-        </SelectContainer>
-      </MenuContainer>
-    </ContentContainer>
+        </S.SelectContainer>
+      </S.MenuContainer>
+    </S.ContentContainer>
   );
 };
 

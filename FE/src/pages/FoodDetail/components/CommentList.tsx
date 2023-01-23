@@ -1,59 +1,17 @@
-import styled from 'styled-components';
-import { Avatar, Typography, Rating, Button } from '@mui/material';
+import { Avatar, Typography, Rating } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
 import { useCallback, useState } from 'react';
 import TextArea from './TextArea';
-import { FlexContainer } from '../../../styles/GlobalStyle';
 import { deleteComment } from '../foodDetailApi';
 import type { RootState } from '../../../store/store';
 import { useSelector } from 'react-redux';
 import React from 'react';
-import type { Comment } from '../../../type/commentType';
-
-const ListContainer = styled(FlexContainer)`
-  height: 150px;
-  box-shadow: 2px 2px 2px gray;
-  width: 50vw;
-  border-radius: 10px;
-  background-color: ${({ theme }) => theme.colors.sub};
-  position: relative;
-  margin: 15px;
-`;
-
-const ContentContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 3;
-  color: ${({ theme }) => theme.font.color.black};
-  padding: 10px;
-
-  & > article {
-    margin: 10px 0;
-  }
-
-  .buttonWrap {
-    display: flex;
-    width: 175px;
-    justify-content: space-between;
-    position: absolute;
-    right: 20px;
-    top: 15px;
-  }
-`;
-
-const AvatarContainer = styled(FlexContainer)`
-  flex: 1;
-  justify-content: center;
-`;
-
-const CustomButton = styled(Button)`
-  width: 80px;
-`;
+import type { Tcomment } from '../../../type/commentType';
+import * as S from '../styles/commentListStyle';
 
 interface CommentList {
-  commentProp: Comment;
+  commentProp: Tcomment;
   updateCommentState: () => void;
 }
 
@@ -91,11 +49,11 @@ const CommentList = ({
 
   return (
     <>
-      <ListContainer>
-        <AvatarContainer>
+      <S.ListContainer>
+        <S.AvatarContainer>
           <Avatar alt="userProfile" src={userProfile} sx={{ width: 55, height: 50 }} />
-        </AvatarContainer>
-        <ContentContainer>
+        </S.AvatarContainer>
+        <S.ContentContainer>
           <Typography component="legend">{nickname}</Typography>
           <Rating
             name="read-only"
@@ -113,26 +71,26 @@ const CommentList = ({
           />
           {userId === loginUserId && (
             <div className="buttonWrap">
-              <CustomButton
+              <S.CustomButton
                 variant="contained"
                 color="info"
                 size="small"
                 startIcon={<CreateIcon />}
                 onClick={handleRevise}>
                 수정
-              </CustomButton>
-              <CustomButton
+              </S.CustomButton>
+              <S.CustomButton
                 variant="contained"
                 color="error"
                 size="small"
                 onClick={(e) => handleDelete(e, commentId)}
                 startIcon={<DeleteIcon />}>
                 삭제
-              </CustomButton>
+              </S.CustomButton>
             </div>
           )}
-        </ContentContainer>
-      </ListContainer>
+        </S.ContentContainer>
+      </S.ListContainer>
     </>
   );
 };

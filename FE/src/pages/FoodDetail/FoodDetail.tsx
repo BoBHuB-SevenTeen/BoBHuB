@@ -1,35 +1,21 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import styled from 'styled-components';
 import Comment from './components/Comment';
 import CommentList from './components/CommentList';
 import Footer from '../../components/Footer';
 import NavBar from '../../components/NavBar';
 import { initialShopState } from '../../type/utilType';
 import Content from './components/Content';
-import { FlexContainer } from '../../styles/GlobalStyle';
 import DetailSlider from './components/DetailSlider';
 import { getComment, getShop, getMenu } from './foodDetailApi';
 import { useParams } from 'react-router';
 import React from 'react';
 import { Menu } from '../../type/menuType';
-import { CommentState } from '../../type/commentType';
-
-const Pagecontainer = styled.section`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-`;
-
-const CommentContainer = styled(FlexContainer)`
-  flex-direction: column;
-  margin: 20px;
-`;
+import type { Tcomment } from '../../type/commentType';
+import * as S from './styles/foodDetailStyle';
 
 const FoodDetail = () => {
   const [shopState, setShopState] = useState(initialShopState);
-  const [commentState, setCommentState] = useState<CommentState[]>([]);
+  const [commentState, setCommentState] = useState<Tcomment[]>([]);
   const [menuState, setMenuState] = useState<Menu[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [update, setUpdated] = useState<boolean>(false);
@@ -79,7 +65,7 @@ const FoodDetail = () => {
   const imageArr = useMemo(() => makeImgArr(), [makeImgArr]);
 
   return (
-    <Pagecontainer ref={scrollRef}>
+    <S.Pagecontainer ref={scrollRef}>
       {isLoading ? (
         'isLoading...'
       ) : (
@@ -92,7 +78,7 @@ const FoodDetail = () => {
             shopId={shopState.shopId}
             scrollRef={scrollRef}
           />
-          <CommentContainer>
+          <S.CommentContainer>
             {commentState.map((comment) => (
               <CommentList
                 key={comment.commentId}
@@ -100,11 +86,11 @@ const FoodDetail = () => {
                 updateCommentState={updateCommentState}
               />
             ))}
-          </CommentContainer>
+          </S.CommentContainer>
           <Footer />
         </>
       )}
-    </Pagecontainer>
+    </S.Pagecontainer>
   );
 };
 

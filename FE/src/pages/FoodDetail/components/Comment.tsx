@@ -1,28 +1,10 @@
-import styled from 'styled-components';
-import { TextField, Button, Typography, Rating } from '@mui/material';
+import { Button, Typography, Rating } from '@mui/material';
 import React, { useState } from 'react';
 import { postComment } from '../foodDetailApi';
 import type { RootState } from '../../../store/store';
 import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
-
-const CommentContainer = styled.form`
-  display: flex;
-  width: 47vw;
-  justify-content: space-between;
-  position: relative;
-`;
-
-const RatingContainer = styled.div`
-  display: flex;
-  position: absolute;
-  top: -35px;
-  left: 10px;
-`;
-
-const CommentField = styled(TextField)`
-  width: 40vw;
-`;
+import * as S from '../styles/commentStyle';
 
 interface commnetProps {
   updateCommentState: () => void;
@@ -57,12 +39,12 @@ const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
   };
 
   return (
-    <CommentContainer onSubmit={createComment}>
-      <RatingContainer>
+    <S.CommentContainer onSubmit={createComment}>
+      <S.RatingContainer>
         <Typography component="legend">식당은 어땠나요?</Typography>
         <Rating name="simple-controlled" value={starValue} onChange={ratingChange} />
-      </RatingContainer>
-      <CommentField
+      </S.RatingContainer>
+      <S.CommentField
         id="outlined-basic"
         label="댓글을 입력하세요"
         variant="outlined"
@@ -72,7 +54,7 @@ const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
       <Button variant="outlined" onClick={createComment}>
         Enter
       </Button>
-    </CommentContainer>
+    </S.CommentContainer>
   );
 };
 
