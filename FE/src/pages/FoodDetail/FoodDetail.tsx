@@ -4,13 +4,15 @@ import Comment from './components/Comment';
 import CommentList from './components/CommentList';
 import Footer from '../../components/Footer';
 import NavBar from '../../components/NavBar';
-import { CommentState, ShopState, MenuState, initialShopState } from './util/foodDetailType';
+import { initialShopState } from '../../type/utilType';
 import Content from './components/Content';
 import { FlexContainer } from '../../styles/GlobalStyle';
 import DetailSlider from './components/DetailSlider';
 import { getComment, getShop, getMenu } from './foodDetailApi';
 import { useParams } from 'react-router';
 import React from 'react';
+import { Menu } from '../../type/menuType';
+import { CommentState } from '../../type/commentType';
 
 const Pagecontainer = styled.section`
   display: flex;
@@ -26,9 +28,9 @@ const CommentContainer = styled(FlexContainer)`
 `;
 
 const FoodDetail = () => {
-  const [shopState, setShopState] = useState<ShopState>(initialShopState);
+  const [shopState, setShopState] = useState(initialShopState);
   const [commentState, setCommentState] = useState<CommentState[]>([]);
-  const [menuState, setMenuState] = useState<MenuState[]>([]);
+  const [menuState, setMenuState] = useState<Menu[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [update, setUpdated] = useState<boolean>(false);
   const scrollRef = useRef<HTMLElement>(null);

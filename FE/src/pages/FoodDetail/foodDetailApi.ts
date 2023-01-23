@@ -1,5 +1,6 @@
 import * as API from '../../api/API';
-import { PostComment, PostParty } from './util/foodDetailType';
+import { PostComment } from '../../type/commentType';
+import { PostParty } from '../../type/partyType';
 
 export const getComment = async (shopId: number) => await API.get(`/api/comments?shopId=${shopId}`);
 

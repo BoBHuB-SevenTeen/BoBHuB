@@ -1,4 +1,4 @@
-import type { NullableNum, ProfilerProps } from './foodDetailType';
+import { NullableNum } from '../../../type/utilType';
 
 export const canWriteComment = (isLogin: boolean, content: string, starValue: NullableNum) => {
   if (!isLogin) {
