@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { NullableNum } from '../../../type/utilType';
 import { patchComment } from '../foodDetailApi';
-import type { NullableNum } from '../util/foodDetailType';
 
 const TextContainer = styled.div`
   display: flex;

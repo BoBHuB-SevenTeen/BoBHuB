@@ -6,7 +6,7 @@ export interface PostComment {
   star: NullableNum;
 }
 
-export interface CommentState extends PostComment {
+export interface Comment extends PostComment {
   userId: number;
   commentId: number;
   createdAt: NullableString;

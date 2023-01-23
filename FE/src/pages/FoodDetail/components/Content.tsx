@@ -2,13 +2,13 @@ import styled from 'styled-components';
 import { Card, Button } from '@mui/material';
 import SelectTags from './SelectTags';
 import { useState, useContext, useEffect } from 'react';
-import { ShopState } from '../util/foodDetailType';
 import { FlexContainer } from '../../../styles/GlobalStyle';
 import React from 'react';
 import { postParty } from '../foodDetailApi';
 import { SocketContext } from '../../../socket/SocketContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
+import { Shops } from '../../../type/shopType';
 
 const ContentContainer = styled(FlexContainer)`
   flex-direction: column;
@@ -90,12 +90,12 @@ const LikeButton = styled(Button)`
 `;
 
 interface Contentype {
-  shop: ShopState;
+  shop: Shops;
 }
 
 const Content = ({ shop }: Contentype) => {
   const [partyLimit, setpartyLimit] = useState<number>(2);
-  const BASEURL = 'https://map.naver.com/v5/entry/place/';
+  const BASE_URL = 'https://map.naver.com/v5/entry/place/';
   const socket = useContext(SocketContext);
   const userId = useSelector((state: RootState) => state.userReducer.currentUser.userId);
   const activePartyList = useSelector(
@@ -173,7 +173,7 @@ const Content = ({ shop }: Contentype) => {
         <MenuCard size={'15px'} width={'20vw'}>
           <p className="description">{shop.description}</p>
           <p>{`거리 : 걸어서 ${shop.distance}분 거리`}</p>
-          <ATag href={`${BASEURL}${shop.address}`} target="_blank" rel="noreferrer">
+          <ATag href={`${BASE_URL}${shop.address}`} target="_blank" rel="noreferrer">
             지도 보기
           </ATag>
         </MenuCard>
