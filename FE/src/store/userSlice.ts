@@ -1,6 +1,7 @@
+import type { User } from './../type/userType';
+
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { get } from '../api/API';
-import { User } from '../type/userType';
 
 export const loginUserData = createAsyncThunk(
   'user/loginUserData',

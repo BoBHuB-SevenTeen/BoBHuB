@@ -8,12 +8,12 @@ import {
   Button,
 } from '@mui/material';
 import { useRef } from 'react';
-import type { UserType } from './Users';
 import styled from 'styled-components';
 import { patch } from '../../../../../api/API';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../../store/store';
 import { getUsersData } from '../../../../../store/adminUsersSlice';
+import { User } from '../../../../../type/userType';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -28,7 +28,7 @@ const style = {
 };
 
 interface UserDetailFormProps {
-  user: UserType;
+  user: User;
   handleClose: () => void;
 }
 

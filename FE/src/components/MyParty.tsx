@@ -69,7 +69,7 @@ const MyParty = ({ open, handleClose }: MyPartyProps) => {
                   </Paragraph>
                 </Description>
               </NoPadFlex>
-              {user.userId === party.userId && party.isComplete === 0 && (
+              {/* {user.userId === party.userId && party.isComplete === 0 && (
                 <DeleteButton
                   size="small"
                   color="error"
@@ -79,6 +79,20 @@ const MyParty = ({ open, handleClose }: MyPartyProps) => {
                 </DeleteButton>
               )}
               {user.userId !== party.userId && party.isComplete === 0 && (
+                <DeleteButton onClick={() => clickLeaveButton(party.partyId)}>
+                  참여 취소
+                </DeleteButton>
+              )} */}
+              {user.userId === party.userId && (
+                <DeleteButton
+                  size="small"
+                  color="error"
+                  variant="outlined"
+                  onClick={() => clickDeleteButton(party.partyId)}>
+                  모집 종료
+                </DeleteButton>
+              )}
+              {user.userId !== party.userId && (
                 <DeleteButton onClick={() => clickLeaveButton(party.partyId)}>
                   참여 취소
                 </DeleteButton>

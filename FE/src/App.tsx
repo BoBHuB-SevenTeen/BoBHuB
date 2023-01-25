@@ -8,21 +8,26 @@ import { SocketContext, socket } from './socket/SocketContext';
 import GlobalFont from './styles/GlobalFont';
 import store from './store/store';
 import { Provider } from 'react-redux/es/exports';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <Provider store={store}>
-      <MuiThemeProvider theme={muitheme}>
-        <ThemeProvider theme={theme}>
-          <SocketContext.Provider value={socket}>
-            <Router />
-            <ChatApp />
-            <GlobalStyle />
-            <GlobalFont />
-          </SocketContext.Provider>
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <MuiThemeProvider theme={muitheme}>
+          <ThemeProvider theme={theme}>
+            <SocketContext.Provider value={socket}>
+              <Router />
+              <ChatApp />
+              <GlobalStyle />
+              <GlobalFont />
+            </SocketContext.Provider>
+          </ThemeProvider>
+        </MuiThemeProvider>
+      </Provider>
+    </QueryClientProvider>
   );
 }
 
