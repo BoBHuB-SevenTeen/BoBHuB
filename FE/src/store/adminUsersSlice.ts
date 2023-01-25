@@ -1,22 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { get } from '../api/API';
-
-export type User = {
-  userId: number;
-  generation: number;
-  track: string;
-  name: string;
-  nickname: string;
-  email: string;
-  phone: string;
-  profile: any;
-  role: string;
-  status: string;
-  createdAt: Date;
-  updatedAt: any;
-  deletedAt: any;
-};
+import { User } from '../type/userType';
 
 export const getUsersData = createAsyncThunk(
   'admin/getUsersData',
