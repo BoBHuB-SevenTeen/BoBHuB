@@ -8,12 +8,9 @@ import {
   Button,
 } from '@mui/material';
 import { useRef } from 'react';
-import type { UserType } from './Users';
 import styled from 'styled-components';
-import { patch } from '../../../../../api/API';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../../store/store';
-import { getUsersData } from '../../../../../store/adminUsersSlice';
+import { User } from '../../../../../type/userType';
+import useMutatationUser from '../../../../../queries/useMutateUserQuery';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -28,26 +25,21 @@ const style = {
 };
 
 interface UserDetailFormProps {
-  user: UserType;
+  user: User;
   handleClose: () => void;
 }
 
 const UserDetailForm = ({ user, handleClose }: UserDetailFormProps) => {
+  const mutation = useMutatationUser();
   const nickname = useRef<TextFieldProps>();
   const auth = useRef<TextFieldProps>();
-  const dispatch = useDispatch<AppDispatch>();
-
-  const updateUserData = (body: { nickname: string; role: string }) => {
-    return patch(`/api/admin/users/${user.userId}`, body);
-  };
 
   const clickUpdateBtn = async () => {
     const body = {
       nickname: nickname.current?.value as string,
       role: auth.current?.value as string,
     };
-    await updateUserData(body);
-    dispatch(getUsersData());
+    mutation.mutate({ userId: user.userId, body });
     handleClose();
   };
   return (

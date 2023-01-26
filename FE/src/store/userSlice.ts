@@ -1,5 +1,6 @@
+import type { User } from './../type/userType';
+
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { get } from '../api/API';
 
 export const loginUserData = createAsyncThunk(
@@ -28,13 +29,13 @@ export const logoutUser = createAsyncThunk('user/logoutUser', async (_, { reject
   }
 });
 
-const initialState = {
+const initialState: { currentUser: User; isLogin: boolean } = {
   currentUser: {
     userId: 0,
     generation: 1,
     track: '',
     name: '',
-    nickName: '',
+    nickname: '',
     email: '',
     phone: '',
     profile: null,

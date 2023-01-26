@@ -1,11 +1,11 @@
 import { Modal } from '@mui/material';
-import type { UserType } from './Users';
+import { User } from '../../../../../type/userType';
 import UserDetailForm from './UserDetailForm';
 
 interface UserModalProps {
   handleClose: () => void;
   open: boolean;
-  user: UserType;
+  user: User;
 }
 
 const UserModal = ({ open, handleClose, user }: UserModalProps) => {

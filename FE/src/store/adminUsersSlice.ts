@@ -1,22 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { get } from '../api/API';
-
-export type User = {
-  userId: number;
-  generation: number;
-  track: string;
-  name: string;
-  nickname: string;
-  email: string;
-  phone: string;
-  profile: any;
-  role: string;
-  status: string;
-  createdAt: Date;
-  updatedAt: any;
-  deletedAt: any;
-};
+import { User } from '../type/userType';
 
 export const getUsersData = createAsyncThunk(
   'admin/getUsersData',
@@ -26,9 +10,6 @@ export const getUsersData = createAsyncThunk(
       console.log(res);
       if (!res) {
         throw new Error('데이터를 받아오지 못했습니다.');
-      }
-      if (typeof res === 'string') {
-        throw new Error('권한이 없는 사용자입니다.');
       }
       return res;
     } catch (err) {

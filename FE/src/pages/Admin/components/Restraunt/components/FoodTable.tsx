@@ -10,7 +10,7 @@ import {
   IconButton,
   Button,
 } from '@mui/material';
-import type { FoodType } from './Foods';
+import type { FoodType } from '../Foods';
 import FoodModal from './FoodModal';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 

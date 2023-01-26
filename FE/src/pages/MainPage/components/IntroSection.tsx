@@ -92,10 +92,10 @@ const IntroSection = () => {
       </video>
 
       <Intro>
-        <div className="main" style={{ zIndex: 1 }}>
+        <div className="main" style={{ zIndex: 1, userSelect: 'none' }}>
           혼자 밥 먹기 싫을 땐?
         </div>
-        <div className="sub" style={{ zIndex: 1 }}>
+        <div className="sub" style={{ zIndex: 1, userSelect: 'none' }}>
           밥허브로 밥메이트 구해요~
         </div>
         <NavLink to="/foodList" className="navLink">

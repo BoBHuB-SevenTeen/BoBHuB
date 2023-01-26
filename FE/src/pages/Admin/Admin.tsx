@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import AdminHeaderNav from './AdminHeaderNav';
-import AdminSideBar from './AdminSideBar';
-import AdminMainSection from './AdminMainSection';
+import AdminHeaderNav from './components/AdminHeaderNav';
+import AdminSideBar from './components/AdminSideBar';
+import AdminMainSection from './components/AdminMainSection';
 
 export const drawerWidth: number = 240;
 

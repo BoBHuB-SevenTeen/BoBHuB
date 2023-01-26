@@ -1,5 +1,5 @@
 import { Modal } from '@mui/material';
-import type { FoodType } from './Foods';
+import type { FoodType } from '../Foods';
 import FoodForm from './FoodForm';
 export const style = {
   position: 'absolute' as 'absolute',

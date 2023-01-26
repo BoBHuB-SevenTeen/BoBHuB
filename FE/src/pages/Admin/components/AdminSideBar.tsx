@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import Toolbar from '@mui/material/Toolbar';
 import MuiDrawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
-import { drawerWidth } from './Admin';
+import { drawerWidth } from '../Admin';
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
