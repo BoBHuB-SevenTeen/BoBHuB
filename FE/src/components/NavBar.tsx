@@ -98,10 +98,10 @@ const NavBar = () => {
   }, [isLogin]);
 
   useEffect(() => {
-    if (myPartyList.find((party) => party.isComplete === 1)) {
+    if (isLogin && myPartyList.find((party) => party.isComplete === 1)) {
       setAlarm(true);
     }
-  }, [myPartyList]);
+  }, [myPartyList, isLogin]);
 
   const handleOpenToggle = () => setOpen(!open);
 
