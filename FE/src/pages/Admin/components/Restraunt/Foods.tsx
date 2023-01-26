@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import FoodTable from './FoodTable';
+import FoodTable from './components/FoodTable';
 import { fetchFoodData } from '../../Api/foodApi';
 
 export type FoodType = {

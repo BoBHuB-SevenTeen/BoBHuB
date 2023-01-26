@@ -1,10 +1,10 @@
-import { Box, Typography, TextField, TextFieldProps, Button, ButtonGroup } from '@mui/material';
-import { deleteFoodData, postFoodData, updateFoodData, updateImg } from '../../Api/foodApi';
+import { Box, Typography, TextField, Button, ButtonGroup } from '@mui/material';
+import { deleteFoodData, postFoodData, updateFoodData, updateImg } from '../../../Api/foodApi';
 import { style } from './FoodModal';
 import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import styled from 'styled-components';
-import type { FoodType } from './Foods';
-import { patch, post, get, delete as deleteApi } from '../../../../api/API';
+import type { FoodType } from '../Foods';
+import { get } from '../../../../../api/API';
 
 interface FoodAddFormProps {
   handleClose: () => void;
@@ -15,10 +15,10 @@ interface FoodAddFormProps {
 
 const FoodForm = ({ handleClose, setFoodsData, btnState, food }: FoodAddFormProps) => {
   const name = useRef<HTMLInputElement>(null);
-  const distance = useRef<TextFieldProps>();
-  const address = useRef<TextFieldProps>();
-  const description = useRef<TextFieldProps>();
-  const category = useRef<TextFieldProps>();
+  const distance = useRef<HTMLInputElement>(null);
+  const address = useRef<HTMLInputElement>(null);
+  const description = useRef<HTMLInputElement>(null);
+  const category = useRef<HTMLInputElement>(null);
   const [shopImg, setShopImg] = useState<Blob[]>([]);
   const [shopImgURL, setShopImgURL] = useState<string>('');
   const [menuImg, setMenuImg] = useState<Blob[]>([]);
@@ -38,11 +38,19 @@ const FoodForm = ({ handleClose, setFoodsData, btnState, food }: FoodAddFormProp
 
   const setFormData = () => {
     const formData = new FormData();
-    formData.append('name', name.current?.value as string);
-    formData.append('distance', distance.current?.value as string);
-    formData.append('address', address.current?.value as string);
-    formData.append('description', description.current?.value as string);
-    formData.append('category', category.current?.value as string);
+    if (
+      !name.current ||
+      !distance.current ||
+      !address.current ||
+      !description.current ||
+      !category.current
+    )
+      return;
+    formData.append('name', name.current.value);
+    formData.append('distance', distance.current.value);
+    formData.append('address', address.current.value);
+    formData.append('description', description.current.value);
+    formData.append('category', category.current.value);
     if (btnState === 'ADD') {
       shopImg.forEach((img) => {
         formData.append('shopPicture', img);
@@ -67,12 +75,14 @@ const FoodForm = ({ handleClose, setFoodsData, btnState, food }: FoodAddFormProp
   const clickUpdateBtn = async (id: number) => {
     const formData = setFormData();
     const imgFormData = setImgFormData();
-    await updateFoodData(id, formData);
-    if (shopImg.length > 0 || menuImg.length > 0) {
-      await updateImg(id, imgFormData);
+    if (formData instanceof FormData) {
+      await updateFoodData(id, formData);
+      if (shopImg.length > 0 || menuImg.length > 0) {
+        await updateImg(id, imgFormData);
+      }
+      setFoodsData();
+      handleClose();
     }
-    setFoodsData();
-    handleClose();
   };
 
   const clickDeleteBtn = async (id: number) => {
@@ -83,11 +93,13 @@ const FoodForm = ({ handleClose, setFoodsData, btnState, food }: FoodAddFormProp
 
   const clickAddButtonHandler = async () => {
     const body = setFormData();
-    await postFoodData(body);
-    setFoodsData();
-    URL.revokeObjectURL(shopImgURL);
-    URL.revokeObjectURL(menuImgURL);
-    handleClose();
+    if (body instanceof FormData) {
+      await postFoodData(body);
+      setFoodsData();
+      URL.revokeObjectURL(shopImgURL);
+      URL.revokeObjectURL(menuImgURL);
+      handleClose();
+    }
   };
 
   const changeShopImgInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -180,10 +192,10 @@ const FoodForm = ({ handleClose, setFoodsData, btnState, food }: FoodAddFormProp
           </FormSection>
           <SideSection>
             <ImgWrapper>
-              <Img src={shopImgURL} alt="img" />
+              <Img src={shopImgURL} alt="shopImage" />
             </ImgWrapper>
             <ImgWrapper>
-              <Img src={menuImgURL} alt="img" />
+              <Img src={menuImgURL} alt="menuImage" />
             </ImgWrapper>
           </SideSection>
         </Flex>

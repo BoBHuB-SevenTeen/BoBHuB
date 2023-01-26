@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Admin from './pages/Admin/components/Admin';
+import Admin from './pages/Admin/Admin';
 import FoodDetail from './pages/FoodDetail/FoodDetail';
 import FoodList from './pages/FoodList/FoodList';
 import Login from './pages/Login/Login';

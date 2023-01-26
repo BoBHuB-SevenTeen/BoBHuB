@@ -2,7 +2,7 @@ import { Toolbar, IconButton, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
-import { drawerWidth } from './Admin';
+import { drawerWidth } from '../Admin';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
