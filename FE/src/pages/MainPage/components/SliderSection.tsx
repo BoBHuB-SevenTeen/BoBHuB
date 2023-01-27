@@ -1,11 +1,10 @@
-import { useState, useEffect, useContext, Fragment } from 'react';
+import { useState, Fragment } from 'react';
 import styled from 'styled-components';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import SliderItem from './SliderItem';
-import { SocketContext } from './../../../socket/SocketContext';
 import useActiveParties from '../../../queries/useActivePartyQuery';
 import useUser from '../../../queries/useUserQuery';
 
@@ -140,12 +139,7 @@ const TitleBox = styled.div`
 
 export default function SimpleSlider() {
   const showMaxCnt = 3;
-  const {
-    data: activeParties,
-    refetch,
-    isError,
-    isSuccess: fetchingActivePartySuccess,
-  } = useActiveParties();
+  const { data: activeParties, isSuccess: fetchingActivePartySuccess } = useActiveParties();
   const { data: user, isSuccess: fetchingUserSuccess } = useUser();
 
   const settings = {
@@ -192,12 +186,6 @@ export default function SimpleSlider() {
   };
 
   const [slideIndex, setSlideIndex] = useState(0);
-  const socket = useContext(SocketContext);
-
-  useEffect(() => {
-    socket.on('leaveSuccess', refetch);
-    socket.on('joinSuccess', refetch);
-  }, []);
 
   return (
     <Fragment>
@@ -224,12 +212,14 @@ export default function SimpleSlider() {
                 {activeParties
                   .filter((party) => party.likedNum !== party.partyLimit)
                   .map((party, index) => (
-                    <SliderItem
-                      index={index}
-                      slideIndex={slideIndex}
-                      party={party}
-                      key={party.shopId}
-                    />
+                    <div key={party.partyId}>
+                      <SliderItem
+                        key={party.partyId}
+                        index={index}
+                        slideIndex={slideIndex}
+                        party={party}
+                      />
+                    </div>
                   ))}
               </StyledSlider>
             )}
@@ -238,12 +228,14 @@ export default function SimpleSlider() {
                 {activeParties
                   .filter((party) => party.likedNum !== party.partyLimit)
                   .map((party, index) => (
-                    <SliderItem
-                      index={index}
-                      slideIndex={slideIndex}
-                      party={party}
-                      key={party.shopId}
-                    />
+                    <div key={party.partyId}>
+                      <SliderItem
+                        key={party.partyId}
+                        index={index}
+                        slideIndex={slideIndex}
+                        party={party}
+                      />
+                    </div>
                   ))}
               </div>
             )}

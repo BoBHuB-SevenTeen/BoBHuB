@@ -18,6 +18,7 @@ import { getMyPartyList } from './../store/partySlice';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import useMyParties from '../queries/useMyPartiesQuery';
+import { isFullParty } from '../util/isFullParty';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -76,10 +77,10 @@ const NavBar = () => {
   }, [isLogin]);
 
   useEffect(() => {
-    if (isSuccess && isLogin && myPartyList.find((party) => party.isComplete === 1)) {
+    if (isSuccess && myPartyList.find((party) => isFullParty(party))) {
       setAlarm(true);
     }
-  }, [myPartyList, isLogin]);
+  }, [myPartyList]);
 
   const handleOpenToggle = () => setOpen(!open);
 

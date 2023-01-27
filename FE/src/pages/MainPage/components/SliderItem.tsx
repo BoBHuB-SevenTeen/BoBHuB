@@ -78,9 +78,7 @@ const SliderItem = ({ party, index, slideIndex }: SliderItemProps) => {
   };
 
   return (
-    <ItemContainer
-      className={index === slideIndex ? 'slide slide-center' : 'slide'}
-      key={party.shopId}>
+    <ItemContainer className={index === slideIndex ? 'slide slide-center' : 'slide'}>
       <NavLink to={`/foodList/${party.shopId}`}>
         <img src={party.shopPicture} alt="shopImg" />
       </NavLink>

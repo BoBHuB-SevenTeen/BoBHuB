@@ -9,6 +9,7 @@ import { useContext, useEffect } from 'react';
 import useMyParties from '../queries/useMyPartiesQuery';
 import useUser from '../queries/useUserQuery';
 import { isFullParty } from '../util/isFullParty';
+import useActiveParties from '../queries/useActivePartyQuery';
 
 interface MyPartyProps {
   open: boolean;
@@ -19,19 +20,24 @@ const MyParty = ({ open, handleClose }: MyPartyProps) => {
   const socket = useContext(SocketContext);
   const { data: myPartyList, refetch, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
   const { data: user, isSuccess: fetchingUserSuccess } = useUser();
+  const { data: ActiveParties, refetch: activePartiesRefetch } = useActiveParties();
 
   useEffect(() => {
     socket.on('joinSuccess', () => {
       refetch();
+      activePartiesRefetch();
     });
     socket.on('leaveSuccess', () => {
       refetch();
+      activePartiesRefetch();
     });
     socket.on('createSuccess', () => {
       refetch();
+      activePartiesRefetch();
     });
     socket.on('deleteSuccess', () => {
       refetch();
+      activePartiesRefetch();
     });
   }, []);
 
