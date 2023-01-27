@@ -6,8 +6,8 @@ import { SocketContext } from '../../../socket/SocketContext';
 import HeartButton from './HeartIcon';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import LockIcon from '@mui/icons-material/Lock';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/store';
+import useMyParties from '../../../queries/useMyPartiesQuery';
+import useUser from '../../../queries/useUserQuery';
 
 const ItemContainer = styled.div`
   background-color: white;
@@ -58,23 +58,23 @@ interface SliderItemProps {
 
 const SliderItem = ({ party, index, slideIndex }: SliderItemProps) => {
   const socket = useContext(SocketContext);
-  const [like, setLike] = useState(false);
-  const userId = useSelector<RootState>((state) => state.userReducer.currentUser.userId);
+  const { data: user, isSuccess: fetchingUserSuccess } = useUser();
   const [isJoined, setIsJoined] = useState(false);
-  const myPartyList = useSelector((state: RootState) => state.partySliceReducer.myPartyList);
+  const { data: myPartyList, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
 
   useEffect(() => {
-    if (myPartyList.find((myParty) => myParty.shopId === party.shopId)) {
+    if (
+      fetchingMyPartiesSuccess &&
+      myPartyList.find((myParty) => myParty.shopId === party.shopId)
+    ) {
       setIsJoined(true);
     } else {
       setIsJoined(false);
-      setLike(false);
     }
   }, [myPartyList]);
 
   const handleLike = (partyId: number) => {
-    setLike(!like);
-    socket.emit('joinParty', partyId, userId);
+    if (fetchingUserSuccess) socket.emit('joinParty', partyId, user.userId);
   };
 
   return (
@@ -103,7 +103,7 @@ const SliderItem = ({ party, index, slideIndex }: SliderItemProps) => {
                 <p>참여중</p>
               </div>
             ) : (
-              <HeartButton like={like} onClick={() => handleLike(party.partyId)} />
+              <HeartButton onClick={() => handleLike(party.partyId)} />
             )}
           </span>
         </div>

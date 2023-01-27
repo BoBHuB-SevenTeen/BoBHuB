@@ -10,7 +10,7 @@ import {
 import { useRef } from 'react';
 import styled from 'styled-components';
 import { User } from '../../../../../type/userType';
-import useMutatationUser from '../../../../../queries/useMutateUserQuery';
+import useMutatationUser from '../../../../../queries/useUserMutation';
 
 const style = {
   position: 'absolute' as 'absolute',

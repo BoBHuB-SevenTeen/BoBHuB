@@ -2,11 +2,10 @@ import styled from 'styled-components';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import { useNavigate } from 'react-router-dom';
 import Gathering from './Gathering';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store/store';
 import { useState, useEffect, useContext } from 'react';
 import { SocketContext } from '../../../socket/SocketContext';
-import { getActivePartyList } from '../../../store/partySlice';
+import { isFullParty } from '../../../util/isFullParty';
+import useActiveParties from '../../../queries/useActivePartyQuery';
 
 type ShopListProps = {
   name: string; //식당명
@@ -40,31 +39,31 @@ const MenuCard = ({
   shopId,
 }: ShopListProps) => {
   const navigate = useNavigate();
-  const activePartyList = useSelector(
-    (state: RootState) => state.partySliceReducer.activePartyList,
-  );
+  const { data: activeParties, isSuccess, refetch } = useActiveParties();
+
   const socket = useContext(SocketContext);
-  const dispatch = useDispatch<AppDispatch>();
+
   const goToFoodDetailPage = () => {
     navigate(`/foodlist/${shopId}`);
   };
+
   const [gathering, setGatherting] = useState(false);
   useEffect(() => {
-    socket.on('joinSuccess', () => dispatch(getActivePartyList()));
-    socket.on('leaveSuccess', () => dispatch(getActivePartyList()));
+    socket.on('joinSuccess', refetch);
+    socket.on('leaveSuccess', refetch);
   }, []);
 
   useEffect(() => {
     if (
-      activePartyList
-        .filter((party) => party.likedNum !== party.partyLimit)
-        .find((party) => party.shopId === shopId)
+      isSuccess &&
+      activeParties.filter((party) => !isFullParty(party)).find((party) => party.shopId === shopId)
     ) {
       setGatherting(true);
     } else {
       setGatherting(false);
     }
-  }, [activePartyList]);
+  }, [activeParties]);
+
   return (
     <Container onClick={goToFoodDetailPage}>
       <CardTitle>

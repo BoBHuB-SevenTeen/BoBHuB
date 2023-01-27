@@ -1,18 +1,13 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, Fragment } from 'react';
 import styled from 'styled-components';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
-import { fetchParties } from './../api/api';
-import { get } from '../../../api/API';
-import { Party } from '../Type';
-import { UserInfoType } from '../../MyPage/MyPage';
 import SliderItem from './SliderItem';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../../store/store';
 import { SocketContext } from './../../../socket/SocketContext';
-import { getActivePartyList } from '../../../store/partySlice';
+import useActiveParties from '../../../queries/useActivePartyQuery';
+import useUser from '../../../queries/useUserQuery';
 
 const StyledSlider = styled(Slider)`
   height: 100%;
@@ -145,13 +140,22 @@ const TitleBox = styled.div`
 
 export default function SimpleSlider() {
   const showMaxCnt = 3;
-  const parties = useSelector((state: RootState) => state.partySliceReducer.activePartyList);
+  const {
+    data: activeParties,
+    refetch,
+    isError,
+    isSuccess: fetchingActivePartySuccess,
+  } = useActiveParties();
+  const { data: user, isSuccess: fetchingUserSuccess } = useUser();
+
   const settings = {
     dots: false,
     className: 'center',
     centerPadding: '0px',
     centerMode: true,
-    infinite: parties.filter((party) => party.likedNum !== party.partyLimit).length > showMaxCnt,
+    infinite:
+      fetchingActivePartySuccess &&
+      activeParties.filter((party) => party.likedNum !== party.partyLimit).length > showMaxCnt,
     speed: 500,
     slidesToShow: showMaxCnt,
     slidesToScroll: 1,
@@ -187,94 +191,65 @@ export default function SimpleSlider() {
     ],
   };
 
-  const [userInfo, setUserInfo] = useState<UserInfoType>({
-    track: '',
-    generation: 0,
-    name: '',
-    email: '',
-    phone: '',
-    nickname: '',
-    profile: '',
-    role: '',
-    password: '',
-    newPassword: '',
-  });
-
   const [slideIndex, setSlideIndex] = useState(0);
   const socket = useContext(SocketContext);
-  const userId = useSelector<RootState>((state) => state.userReducer.currentUser.userId);
-
-  const dispatch = useDispatch<AppDispatch>();
-  const setPartiesData = () => {
-    dispatch(getActivePartyList());
-  };
 
   useEffect(() => {
-    socket.on('leaveSuccess', setPartiesData);
-    socket.on('joinSuccess', setPartiesData);
-  }, []);
-
-  const getUserInfoAPI = async () => {
-    const res = await get('/api/users');
-    setUserInfo(res);
-  };
-
-  useEffect(() => {
-    try {
-      getUserInfoAPI();
-    } catch (err) {
-      console.error(err);
-    }
+    socket.on('leaveSuccess', refetch);
+    socket.on('joinSuccess', refetch);
   }, []);
 
   return (
-    <Div
-      length={parties.filter((party) => party.likedNum !== party.partyLimit).length}
-      max={showMaxCnt}>
-      {userInfo ? (
-        <TitleBox>
-          밥메이트들이 <span style={{ color: '#E59A59' }}>{userInfo.name}</span>님을 기다리고
-          있어요!
-        </TitleBox>
-      ) : (
-        <div className="login_msg">로그인 후 이용해주세요!</div>
-      )}
-
-      <div>
-        {parties.length === 0 && (
-          <LabelContainer>
-            <div>활성화된 식당이 없습니다.</div>
-          </LabelContainer>
-        )}
-        {parties.length >= 4 && (
-          <StyledSlider {...settings}>
-            {parties
-              .filter((party) => party.likedNum !== party.partyLimit)
-              .map((party, index) => (
-                <SliderItem
-                  index={index}
-                  slideIndex={slideIndex}
-                  party={party}
-                  key={party.shopId}
-                />
-              ))}
-          </StyledSlider>
-        )}
-        {parties.length <= 3 && (
+    <Fragment>
+      {fetchingActivePartySuccess && (
+        <Div
+          length={activeParties.filter((party) => party.likedNum !== party.partyLimit).length}
+          max={showMaxCnt}>
+          {fetchingUserSuccess ? (
+            <TitleBox>
+              밥메이트들이 <span style={{ color: '#E59A59' }}>{user.name}</span>님을 기다리고
+              있어요!
+            </TitleBox>
+          ) : (
+            <div className="login_msg">로그인 후 이용해주세요!</div>
+          )}
           <div>
-            {parties
-              .filter((party) => party.likedNum !== party.partyLimit)
-              .map((party, index) => (
-                <SliderItem
-                  index={index}
-                  slideIndex={slideIndex}
-                  party={party}
-                  key={party.shopId}
-                />
-              ))}
+            {activeParties.length === 0 && (
+              <LabelContainer>
+                <div>활성화된 식당이 없습니다.</div>
+              </LabelContainer>
+            )}
+            {activeParties.length >= 4 && (
+              <StyledSlider {...settings}>
+                {activeParties
+                  .filter((party) => party.likedNum !== party.partyLimit)
+                  .map((party, index) => (
+                    <SliderItem
+                      index={index}
+                      slideIndex={slideIndex}
+                      party={party}
+                      key={party.shopId}
+                    />
+                  ))}
+              </StyledSlider>
+            )}
+            {activeParties.length <= 3 && (
+              <div>
+                {activeParties
+                  .filter((party) => party.likedNum !== party.partyLimit)
+                  .map((party, index) => (
+                    <SliderItem
+                      index={index}
+                      slideIndex={slideIndex}
+                      party={party}
+                      key={party.shopId}
+                    />
+                  ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </Div>
+        </Div>
+      )}
+    </Fragment>
   );
 }

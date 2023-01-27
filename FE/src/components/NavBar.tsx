@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Typography, Stack, Button } from '@mui/material';
 import logo from '../assets/BoBHuB_logo.png';
 import title from '../assets/BoBHuB_textLogo.png';
 import { Link, useLocation } from 'react-router-dom';
-import React, { useEffect, Fragment, useState, useContext } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUserData, logoutUser } from '../store/userSlice';
 import type { AppDispatch, RootState } from '../store/store';
@@ -14,10 +14,10 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import UserGuide from './UserGuide/UserGuide';
-import { SocketContext } from '../socket/SocketContext';
-import { getActivePartyList, getMyPartyList } from './../store/partySlice';
-import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import { getMyPartyList } from './../store/partySlice';
+import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import useMyParties from '../queries/useMyPartiesQuery';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -54,41 +54,19 @@ const TitleLogo = styled.img`
 const NavBar = () => {
   const [open, setOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
-  const activePartyList = useSelector(
-    (state: RootState) => state.partySliceReducer.activePartyList,
-  );
-  const myPartyList = useSelector((state: RootState) => state.partySliceReducer.myPartyList);
+  const { data: myPartyList, isSuccess } = useMyParties();
   const isLogin = useSelector((state: RootState) => state.userReducer.isLogin);
   const role = useSelector((state: RootState) => state.userReducer.currentUser.role);
 
   const location = useLocation();
   const [modal, setModal] = useState(false);
   const [alarm, setAlarm] = useState(false);
-  const socket = useContext(SocketContext);
   const handleOpen = () => setModal(true);
   const handleClose = () => setModal(false);
   const closeAlarm = () => setAlarm(false);
 
   useEffect(() => {
     dispatch(loginUserData());
-    dispatch(getMyPartyList());
-    dispatch(getActivePartyList());
-    socket.on('joinSuccess', () => {
-      dispatch(getMyPartyList());
-      dispatch(getActivePartyList());
-    });
-    socket.on('leaveSuccess', () => {
-      dispatch(getActivePartyList());
-      dispatch(getMyPartyList());
-    });
-    socket.on('createSuccess', () => {
-      dispatch(getActivePartyList());
-      dispatch(getMyPartyList());
-    });
-    socket.on('deleteSuccess', () => {
-      dispatch(getActivePartyList());
-      dispatch(getMyPartyList());
-    });
   }, []);
 
   useEffect(() => {
@@ -98,7 +76,7 @@ const NavBar = () => {
   }, [isLogin]);
 
   useEffect(() => {
-    if (isLogin && myPartyList.find((party) => party.isComplete === 1)) {
+    if (isSuccess && isLogin && myPartyList.find((party) => party.isComplete === 1)) {
       setAlarm(true);
     }
   }, [myPartyList, isLogin]);

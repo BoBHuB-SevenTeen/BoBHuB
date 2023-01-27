@@ -3,12 +3,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { delete as del } from '../api/API';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
 import { getLimitTime } from '../util/getLimitTime';
 import { SocketContext } from '../socket/SocketContext';
 import { useContext, useEffect } from 'react';
-import { getMyPartyList } from './../store/partySlice';
+import useMyParties from '../queries/useMyPartiesQuery';
+import useUser from '../queries/useUserQuery';
+import { isFullParty } from '../util/isFullParty';
 
 interface MyPartyProps {
   open: boolean;
@@ -16,25 +16,32 @@ interface MyPartyProps {
 }
 
 const MyParty = ({ open, handleClose }: MyPartyProps) => {
-  const user = useSelector((state: RootState) => state.userReducer.currentUser);
   const socket = useContext(SocketContext);
-  const dispatch = useDispatch<AppDispatch>();
-  const myPartyList = useSelector((state: RootState) => state.partySliceReducer.myPartyList);
+  const { data: myPartyList, refetch, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
+  const { data: user, isSuccess: fetchingUserSuccess } = useUser();
 
   useEffect(() => {
-    socket.on('leaveSuccess', (result, msg) => {
-      dispatch(getMyPartyList());
+    socket.on('joinSuccess', () => {
+      refetch();
+    });
+    socket.on('leaveSuccess', () => {
+      refetch();
+    });
+    socket.on('createSuccess', () => {
+      refetch();
+    });
+    socket.on('deleteSuccess', () => {
+      refetch();
     });
   }, []);
 
   const clickLeaveButton = (partyId: number) => {
-    socket.emit('leaveParty', partyId, user.userId);
+    socket.emit('leaveParty', partyId, fetchingUserSuccess && user.userId);
   };
 
   const clickDeleteButton = async (id: number) => {
     const res = await del(`/api/parties/${id}`);
     socket.emit('deleteParty', '모임삭제');
-    dispatch(getMyPartyList());
   };
 
   return (
@@ -48,28 +55,31 @@ const MyParty = ({ open, handleClose }: MyPartyProps) => {
         </Bar>
       </Div>
       <ListWrapper>
-        {myPartyList.length === 0 && <List>참여중인 모임이 없습니다.</List>}
-        {myPartyList.map((party, index) => {
-          // UTC 기준 시간 > 한국시간으로 변경
-          const limit = getLimitTime(party.createdAt, party.timeLimit);
-          return (
-            <List key={party.partyId}>
-              <NoPadFlex>
-                <BasicLink to={`/foodlist/${party.shopId}`}>
-                  <ImgWrapper>
-                    <Img src={party.shopPicture} alt="img" />
-                  </ImgWrapper>
-                </BasicLink>
-                <Description>
+        {fetchingMyPartiesSuccess && myPartyList.length === 0 && (
+          <List>참여중인 모임이 없습니다.</List>
+        )}
+        {fetchingMyPartiesSuccess &&
+          myPartyList.map((party) => {
+            // UTC 기준 시간 > 한국시간으로 변경
+            const limit = getLimitTime(party.createdAt, party.timeLimit);
+            return (
+              <List key={party.partyId}>
+                <NoPadFlex>
                   <BasicLink to={`/foodlist/${party.shopId}`}>
-                    <Name>{party.name}</Name>
+                    <ImgWrapper>
+                      <Img src={party.shopPicture} alt="img" />
+                    </ImgWrapper>
                   </BasicLink>
-                  <Paragraph>
-                    모집 현황 {party.likedNum}/{party.partyLimit}
-                  </Paragraph>
-                </Description>
-              </NoPadFlex>
-              {/* {user.userId === party.userId && party.isComplete === 0 && (
+                  <Description>
+                    <BasicLink to={`/foodlist/${party.shopId}`}>
+                      <Name>{party.name}</Name>
+                    </BasicLink>
+                    <Paragraph>
+                      모집 현황 {party.likedNum}/{party.partyLimit}
+                    </Paragraph>
+                  </Description>
+                </NoPadFlex>
+                {/* {user.userId === party.userId && isFullParty(party) && (
                 <DeleteButton
                   size="small"
                   color="error"
@@ -78,29 +88,29 @@ const MyParty = ({ open, handleClose }: MyPartyProps) => {
                   모집 종료
                 </DeleteButton>
               )}
-              {user.userId !== party.userId && party.isComplete === 0 && (
+              {user.userId !== party.userId && isFullParty(party) && (
                 <DeleteButton onClick={() => clickLeaveButton(party.partyId)}>
                   참여 취소
                 </DeleteButton>
               )} */}
-              {user.userId === party.userId && (
-                <DeleteButton
-                  size="small"
-                  color="error"
-                  variant="outlined"
-                  onClick={() => clickDeleteButton(party.partyId)}>
-                  모집 종료
-                </DeleteButton>
-              )}
-              {user.userId !== party.userId && (
-                <DeleteButton onClick={() => clickLeaveButton(party.partyId)}>
-                  참여 취소
-                </DeleteButton>
-              )}
-              {party.isComplete === 1 && <Complete>모집 완료</Complete>}
-            </List>
-          );
-        })}
+                {fetchingUserSuccess && user.userId === party.userId && (
+                  <DeleteButton
+                    size="small"
+                    color="error"
+                    variant="outlined"
+                    onClick={() => clickDeleteButton(party.partyId)}>
+                    모집 종료
+                  </DeleteButton>
+                )}
+                {fetchingUserSuccess && user.userId !== party.userId && (
+                  <DeleteButton onClick={() => clickLeaveButton(party.partyId)}>
+                    참여 취소
+                  </DeleteButton>
+                )}
+                {isFullParty(party) && <Complete>모집 완료</Complete>}
+              </List>
+            );
+          })}
       </ListWrapper>
     </Container>
   );
