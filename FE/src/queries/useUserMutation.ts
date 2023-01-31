@@ -1,5 +1,5 @@
 import { patch } from '../api/API';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const updateUserData = (userId: number, body: { nickname: string; role: string }) => {
   return patch(`/api/admin/users/${userId}`, body);

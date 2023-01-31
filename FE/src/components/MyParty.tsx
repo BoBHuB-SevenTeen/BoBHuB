@@ -10,6 +10,7 @@ import useMyParties from '../queries/useMyPartiesQuery';
 import useUser from '../queries/useUserQuery';
 import { isFullParty } from '../util/isFullParty';
 import useActiveParties from '../queries/useActivePartyQuery';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface MyPartyProps {
   open: boolean;
@@ -18,26 +19,23 @@ interface MyPartyProps {
 
 const MyParty = ({ open, handleClose }: MyPartyProps) => {
   const socket = useContext(SocketContext);
-  const { data: myPartyList, refetch, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
+  const { data: myPartyList, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
   const { data: user, isSuccess: fetchingUserSuccess } = useUser();
-  const { data: ActiveParties, refetch: activePartiesRefetch } = useActiveParties();
+  const { data: ActiveParties } = useActiveParties();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     socket.on('joinSuccess', () => {
-      refetch();
-      activePartiesRefetch();
+      queryClient.invalidateQueries(['parties']);
     });
     socket.on('leaveSuccess', () => {
-      refetch();
-      activePartiesRefetch();
+      queryClient.invalidateQueries(['parties']);
     });
     socket.on('createSuccess', () => {
-      refetch();
-      activePartiesRefetch();
+      queryClient.invalidateQueries(['parties']);
     });
     socket.on('deleteSuccess', () => {
-      refetch();
-      activePartiesRefetch();
+      queryClient.invalidateQueries(['parties']);
     });
   }, []);
 

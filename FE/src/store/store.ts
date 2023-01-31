@@ -1,3 +1,4 @@
+import { loginSlice } from './loginSlice';
 import { configureStore } from '@reduxjs/toolkit';
 import userSlice from './userSlice';
 import adminUsersSlice from './adminUsersSlice';
@@ -8,6 +9,7 @@ const store = configureStore({
     userReducer: userSlice.reducer,
     adminUsersReducer: adminUsersSlice.reducer,
     partySliceReducer: partySlice.reducer,
+    loginReducer: loginSlice.reducer,
   },
 });
 
