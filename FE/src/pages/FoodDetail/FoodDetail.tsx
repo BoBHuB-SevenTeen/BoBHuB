@@ -12,6 +12,8 @@ import React from 'react';
 import { Menu } from '../../type/menuType';
 import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
+import { useQuery } from 'react-query';
+import * as API from '../../api/API';
 
 const FoodDetail = () => {
   const [shopState, setShopState] = useState(initialShopState);
@@ -21,6 +23,20 @@ const FoodDetail = () => {
   const [update, setUpdated] = useState<boolean>(false);
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
+
+  const fetchComments = async (shopId: number): Promise<Tcomment[] | undefined> => {
+    try {
+      const res = await API.get(`/api/comments?shopId=${shopId}`);
+      if (!res) {
+        throw new Error('데이터를 받아오지 못했습니다.');
+      }
+      return res;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const { data, error } = useQuery(['comment', shopId], () => fetchComments(shopId));
 
   const updateCommentState = useCallback(() => {
     setUpdated((current) => !current);
