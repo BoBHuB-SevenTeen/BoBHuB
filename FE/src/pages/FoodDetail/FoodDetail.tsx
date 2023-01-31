@@ -12,8 +12,9 @@ import React from 'react';
 import { Menu } from '../../type/menuType';
 import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import * as API from '../../api/API';
+import { AxiosError } from 'axios';
 
 const FoodDetail = () => {
   const [shopState, setShopState] = useState(initialShopState);
@@ -24,7 +25,7 @@ const FoodDetail = () => {
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
 
-  const fetchComments = async (shopId: number): Promise<Tcomment[] | undefined> => {
+  const fetchComments = async (shopId: number) => {
     try {
       const res = await API.get(`/api/comments?shopId=${shopId}`);
       if (!res) {
@@ -36,7 +37,9 @@ const FoodDetail = () => {
     }
   };
 
-  const { data, error } = useQuery(['comment', shopId], () => fetchComments(shopId));
+  const { data, error } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () =>
+    fetchComments(shopId),
+  );
 
   const updateCommentState = useCallback(() => {
     setUpdated((current) => !current);

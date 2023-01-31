@@ -8,8 +8,8 @@ import { SocketContext, socket } from './socket/SocketContext';
 import GlobalFont from './styles/GlobalFont';
 import store from './store/store';
 import { Provider } from 'react-redux/es/exports';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
