@@ -9,12 +9,14 @@ import GlobalFont from './styles/GlobalFont';
 import store from './store/store';
 import { Provider } from 'react-redux/es/exports';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools />
       <Provider store={store}>
         <MuiThemeProvider theme={muitheme}>
           <ThemeProvider theme={theme}>
