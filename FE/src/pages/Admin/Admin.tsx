@@ -12,7 +12,7 @@ const mdTheme = createTheme();
 
 function Admin() {
   const [open, setOpen] = useState(true);
-  const [selectedButton, setSelectedButton] = useState('users');
+  const [selectedButton, setSelectedButton] = useState<'users' | 'restaurants'>('users');
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -21,9 +21,6 @@ function Admin() {
   };
   const clickRestaurantBtn = () => {
     setSelectedButton('restaurants');
-  };
-  const clickDashBoardBtn = () => {
-    setSelectedButton('dashboard');
   };
 
   return (

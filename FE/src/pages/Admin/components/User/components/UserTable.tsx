@@ -10,8 +10,6 @@ import {
   Button,
 } from '@mui/material';
 import UserModal from './UserModal';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../../store/store';
 import { useNavigate } from 'react-router';
 import { User } from '../../../../../type/userType';
 import useAllUsers from '../../../../../queries/useAllUsersQuery';

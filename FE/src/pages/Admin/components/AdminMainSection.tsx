@@ -2,7 +2,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Users from './User/components/Users';
+import Users from './User/Users';
 import Foods from './Restraunt/Foods';
 import Box from '@mui/material/Box';
 
