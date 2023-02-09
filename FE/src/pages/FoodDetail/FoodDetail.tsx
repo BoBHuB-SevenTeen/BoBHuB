@@ -12,15 +12,29 @@ import React from 'react';
 import { Menu } from '../../type/menuType';
 import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import * as API from '../../api/API';
 
 const FoodDetail = () => {
   const [shopState, setShopState] = useState(initialShopState);
   const [commentState, setCommentState] = useState<Tcomment[]>([]);
   const [menuState, setMenuState] = useState<Menu[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(true);
+  // const [isLoading, setLoading] = useState<boolean>(true);
   const [update, setUpdated] = useState<boolean>(false);
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
+
+  const fetchComments = async (shopId: number) => {
+    return await API.get(`/api/comments?shopId=${shopId}`);
+  };
+
+  const { isLoading, isError, data, error } = useQuery<Tcomment[], AxiosError>(
+    ['comment', shopId],
+    () => fetchComments(shopId),
+  );
+
+  console.log('data', data, 'isError', isError);
 
   const updateCommentState = useCallback(() => {
     setUpdated((current) => !current);
@@ -40,7 +54,7 @@ const FoodDetail = () => {
   const fetchInitialData = async () => {
     await fetchCommentState(shopId);
     await fetchShopState(shopId);
-    setLoading(false);
+    // setLoading(false);
   };
 
   useEffect(() => {
