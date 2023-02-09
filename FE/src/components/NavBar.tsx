@@ -2,9 +2,8 @@ import { AppBar, Toolbar, Typography, Stack, Button } from '@mui/material';
 import logo from '../assets/BoBHuB_logo.png';
 import title from '../assets/BoBHuB_textLogo.png';
 import { Link, useLocation } from 'react-router-dom';
-import React, { useEffect, Fragment, useState, useContext } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUserData, logoutUser } from '../store/userSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import MyParty from './MyParty';
 import styled from 'styled-components';
@@ -14,10 +13,15 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import UserGuide from './UserGuide/UserGuide';
-import { SocketContext } from '../socket/SocketContext';
-import { getActivePartyList, getMyPartyList } from './../store/partySlice';
-import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import { getMyPartyList } from './../store/partySlice';
+import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import useMyParties from '../queries/useMyPartiesQuery';
+import { isFullParty } from '../util/isFullParty';
+import { loginAction, logoutAction } from '../store/loginSlice';
+import useUser from '../queries/useUserQuery';
+import { get } from '../api/API';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -52,44 +56,26 @@ const TitleLogo = styled.img`
 `;
 
 const NavBar = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const dispatch = useDispatch<AppDispatch>();
-  const activePartyList = useSelector(
-    (state: RootState) => state.partySliceReducer.activePartyList,
-  );
-  const myPartyList = useSelector((state: RootState) => state.partySliceReducer.myPartyList);
-  const isLogin = useSelector((state: RootState) => state.userReducer.isLogin);
-  const role = useSelector((state: RootState) => state.userReducer.currentUser.role);
-
-  const location = useLocation();
+  const [open, setOpen] = useState(false);
   const [modal, setModal] = useState(false);
   const [alarm, setAlarm] = useState(false);
-  const socket = useContext(SocketContext);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { data: myPartyList, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
+  const isLogin = useSelector((state: RootState) => state.loginReducer.isLogin);
+  const { data: user, isSuccess: fetchingUserSuccess, isError, refetch } = useUser();
+  const queryClient = useQueryClient();
+
+  const location = useLocation();
+
   const handleOpen = () => setModal(true);
   const handleClose = () => setModal(false);
   const closeAlarm = () => setAlarm(false);
 
-  useEffect(() => {
-    dispatch(loginUserData());
-    dispatch(getMyPartyList());
-    dispatch(getActivePartyList());
-    socket.on('joinSuccess', () => {
-      dispatch(getMyPartyList());
-      dispatch(getActivePartyList());
-    });
-    socket.on('leaveSuccess', () => {
-      dispatch(getActivePartyList());
-      dispatch(getMyPartyList());
-    });
-    socket.on('createSuccess', () => {
-      dispatch(getActivePartyList());
-      dispatch(getMyPartyList());
-    });
-    socket.on('deleteSuccess', () => {
-      dispatch(getActivePartyList());
-      dispatch(getMyPartyList());
-    });
-  }, []);
+  if (fetchingUserSuccess) dispatch(loginAction());
+  else if (isError) dispatch(logoutAction());
+  else dispatch(logoutAction());
 
   useEffect(() => {
     if (open === true) {
@@ -98,16 +84,18 @@ const NavBar = () => {
   }, [isLogin]);
 
   useEffect(() => {
-    if (isLogin && myPartyList.find((party) => party.isComplete === 1)) {
+    if (fetchingMyPartiesSuccess && myPartyList.find((party) => isFullParty(party))) {
       setAlarm(true);
     }
-  }, [myPartyList, isLogin]);
+  }, [myPartyList]);
 
   const handleOpenToggle = () => setOpen(!open);
 
-  const logout = () => {
-    dispatch(logoutUser());
-    window.localStorage.clear();
+  const logout = async () => {
+    const res = await get('/api/auth/logout');
+    dispatch(logoutAction());
+    queryClient.invalidateQueries(['user']);
+    // window.localStorage.clear();
   };
 
   const handleLikedParty = () => {
@@ -145,7 +133,7 @@ const NavBar = () => {
           <Button onClick={handleOpen} sx={{ color: 'white' }}>
             밥허브 이용가이드
           </Button>
-          {role === 'admin' && (
+          {fetchingUserSuccess && user.role === 'admin' && (
             <BasicLink to="/admin">
               <Button color="inherit">관리자</Button>
             </BasicLink>

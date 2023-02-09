@@ -1,4 +1,4 @@
-import UserTable from './UserTable';
+import UserTable from './components/UserTable';
 import styled from 'styled-components';
 
 const Users = () => {

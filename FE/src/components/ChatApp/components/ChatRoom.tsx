@@ -2,12 +2,11 @@ import { Title } from '../styles/chatStyle';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { SocketContext } from '../../../socket/SocketContext';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store/store';
 import ChatMessage from './ChatMessage';
 import { setLog } from '../chatAppApi';
 import { MessageInfo } from '../chatAppApi';
 import * as S from '../styles/chatRoomStyle';
+import useUser from './../../../queries/useUserQuery';
 
 interface ChatRoomProps {
   roomKey: string;
@@ -20,8 +19,7 @@ const ChatRoom = ({ roomKey }: ChatRoomProps) => {
   const [content, setContent] = useState<string>('');
   const socket = useContext(SocketContext);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const userName = useSelector<RootState>((state) => state.userReducer.currentUser.name);
-  const userId = useSelector<RootState>((state) => state.userReducer.currentUser.userId);
+  const { data: user, isSuccess } = useUser();
   const [roomName, partyId] = roomKey.split('/');
 
   const addMessage = (messageInfo: MessageInfo) => {
@@ -41,7 +39,7 @@ const ChatRoom = ({ roomKey }: ChatRoomProps) => {
       alert('메세지를 입력해주세요');
       return;
     }
-    const messageInfo = { userId, userName, message: content };
+    const messageInfo = { userId: user!.userId, userName: user!.name, message: content };
     socket.emit('sendMessage', messageInfo, roomKey, addMessage);
     setContent('');
   };

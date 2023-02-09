@@ -17,7 +17,7 @@ type createCommentType = React.FormEvent<HTMLFormElement> | React.MouseEvent<HTM
 const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
   const [content, setContent] = useState<string>('');
   const [starValue, setStarValue] = useState<number | null>(5);
-  const isLogin = useSelector<RootState>((state) => state.userReducer.isLogin) as boolean;
+  const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin) as boolean;
 
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) => setStarValue(newValue);
   const fieldChange = (e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value);

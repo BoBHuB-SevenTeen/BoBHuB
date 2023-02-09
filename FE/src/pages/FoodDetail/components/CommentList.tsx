@@ -4,11 +4,10 @@ import CreateIcon from '@mui/icons-material/Create';
 import { useCallback, useState } from 'react';
 import TextArea from './TextArea';
 import { deleteComment } from '../foodDetailApi';
-import type { RootState } from '../../../store/store';
-import { useSelector } from 'react-redux';
 import React from 'react';
 import type { Tcomment } from '../../../type/commentType';
 import * as S from '../styles/commentListStyle';
+import useUser from './../../../queries/useUserQuery';
 
 interface CommentList {
   commentProp: Tcomment;
@@ -22,7 +21,7 @@ const CommentList = ({
   const [canRevise, setRevise] = useState<boolean>(false);
   const [canReadOnly, setReadOnly] = useState<boolean>(true);
   const [commentStar, setCommentStar] = useState<number | null>(star);
-  const loginUserId = useSelector<RootState>((state) => state.userReducer.currentUser.userId);
+  const { data: user, isSuccess } = useUser();
 
   const handleRevise = (e: React.MouseEvent<HTMLButtonElement>) => {
     setRevise(true);
@@ -69,7 +68,7 @@ const CommentList = ({
             updateRevise={updateRevise}
             updateReadOnly={updateReadOnly}
           />
-          {userId === loginUserId && (
+          {userId === user?.userId && (
             <div className="buttonWrap">
               <S.CustomButton
                 variant="contained"

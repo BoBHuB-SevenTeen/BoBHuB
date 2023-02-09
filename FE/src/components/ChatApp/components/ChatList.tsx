@@ -5,6 +5,8 @@ import type { RootState } from '../../../store/store';
 import type { Party } from '../../../pages/MainPage/Type';
 import * as S from '../styles/chatListStyle';
 import { Title } from '../styles/chatStyle';
+import useUser from './../../../queries/useUserQuery';
+import useMyParties from './../../../queries/useMyPartiesQuery';
 
 interface ChatListProps {
   moveRoom: (x: string) => void;
@@ -12,9 +14,9 @@ interface ChatListProps {
 
 const ChatList = ({ moveRoom }: ChatListProps) => {
   const socket = useContext(SocketContext);
-  const userName = useSelector<RootState>((state) => state.userReducer.currentUser.name);
-  const isLogin = useSelector<RootState>((state) => state.userReducer.isLogin);
-  const myPartyList = useSelector((state: RootState) => state.partySliceReducer.myPartyList);
+  const { data: user, isSuccess: isUserSuccess } = useUser();
+  const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin);
+  const { data: myPartyList, isSuccess: isPartiesSuccess } = useMyParties();
   const [completedParty, setCompletedParty] = useState<Party[]>([]);
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -23,12 +25,14 @@ const ChatList = ({ moveRoom }: ChatListProps) => {
   };
 
   useEffect(() => {
-    socket.emit('nickname', userName);
+    if (isUserSuccess && isPartiesSuccess) {
+      socket.emit('nickname', user.name);
 
-    setCompletedParty(myPartyList.filter((party) => party.isComplete === 1));
+      setCompletedParty(myPartyList.filter((party) => party.likedNum === party.partyLimit));
+    }
 
     // 실제 room이 만들어진걸 확인함.
-  }, [userName]);
+  }, [user]);
 
   return (
     <>
