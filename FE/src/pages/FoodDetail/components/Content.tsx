@@ -3,10 +3,11 @@ import { useState, useContext, useEffect } from 'react';
 import React from 'react';
 import { postParty } from '../foodDetailApi';
 import { SocketContext } from '../../../socket/SocketContext';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/store';
 import { Shops } from '../../../type/shopType';
 import * as S from '../styles/contentStyle';
+import useUser from './../../../queries/useUserQuery';
+import useActiveParties from './../../../queries/useActivePartyQuery';
+import useMyParties from './../../../queries/useMyPartiesQuery';
 
 interface Contentype {
   shop: Shops;
@@ -16,16 +17,14 @@ const Content = ({ shop }: Contentype) => {
   const [partyLimit, setpartyLimit] = useState<number>(2);
   const BASE_URL = 'https://map.naver.com/v5/entry/place/';
   const socket = useContext(SocketContext);
-  const userId = useSelector((state: RootState) => state.userReducer.currentUser.userId);
-  const activePartyList = useSelector(
-    (state: RootState) => state.partySliceReducer.activePartyList,
-  );
+  const { data: user, isSuccess: isUserSuccess } = useUser();
+  const { data: activePartyList, isSuccess: isActivePartiesSuccess } = useActiveParties();
   const [isJoined, setIsJoined] = useState(false);
 
-  const myPartyList = useSelector((state: RootState) => state.partySliceReducer.myPartyList);
+  const { data: myPartyList, isSuccess: isMyPartiesSuccess } = useMyParties();
   const [gathering, setGathering] = useState(false);
   const currentParty = activePartyList
-    .filter((party) => party.likedNum !== party.partyLimit)
+    ?.filter((party) => party.likedNum !== party.partyLimit)
     .find((party) => party.shopId === shop.shopId);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ const Content = ({ shop }: Contentype) => {
   }, [activePartyList]);
 
   useEffect(() => {
-    if (myPartyList.find((myParty) => myParty.shopId === shop.shopId)) {
+    if (isMyPartiesSuccess && myPartyList.find((myParty) => myParty.shopId === shop.shopId)) {
       setIsJoined(true);
     } else {
       setIsJoined(false);
@@ -58,7 +57,7 @@ const Content = ({ shop }: Contentype) => {
   };
 
   const clickJoinButton = (partyId: number) => {
-    socket.emit('joinParty', partyId, userId);
+    if (isUserSuccess) socket.emit('joinParty', partyId, user?.userId);
   };
 
   return (

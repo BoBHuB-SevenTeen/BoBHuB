@@ -24,7 +24,6 @@ const UserTable = () => {
     setOpen(true);
   };
   const navigate = useNavigate();
-  // const users = useSelector((state: RootState) => state.adminUsersReducer.users);
   const handleClose = () => setOpen(false);
   const isMounted = useRef(false);
 
