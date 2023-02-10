@@ -88,7 +88,7 @@ const Content = ({ shop }: Contentype) => {
       </S.TitleContainer>
 
       <S.MenuContainer>
-        <S.MenuCard size={'15px'} width={'20vw'}>
+        <S.MenuCard size={'15px'} width={'20vw'} padding="20px" margin="20px" flex="2">
           <p className="description">{shop.description}</p>
           <p>{`거리 : 걸어서 ${shop.distance}분 거리`}</p>
           <S.ATag href={`${BASE_URL}${shop.address}`} target="_blank" rel="noreferrer">
