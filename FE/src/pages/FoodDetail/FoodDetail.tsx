@@ -6,104 +6,105 @@ import NavBar from '../../components/NavBar';
 import { initialShopState } from '../../type/utilType';
 import Content from './components/Content';
 import DetailSlider from './components/DetailSlider';
-import { getComment, getShop, getMenu } from './foodDetailApi';
+import { getShop, getMenu } from './foodDetailApi';
 import { useParams } from 'react-router';
 import React from 'react';
+import { Shops } from '../../type/shopType';
 import { Menu } from '../../type/menuType';
 import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import * as API from '../../api/API';
+import { fetchComments } from '../../queries/comment/useCommentQuery';
 
 const FoodDetail = () => {
-  const [shopState, setShopState] = useState(initialShopState);
-  const [commentState, setCommentState] = useState<Tcomment[]>([]);
-  const [menuState, setMenuState] = useState<Menu[]>([]);
-  // const [isLoading, setLoading] = useState<boolean>(true);
   const [update, setUpdated] = useState<boolean>(false);
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
 
-  const fetchComments = async (shopId: number) => {
-    return await API.get(`/api/comments?shopId=${shopId}`);
-  };
+  const {
+    isLoading: commentLoading,
+    isError: isCommentError,
+    data: commentState,
+  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId));
 
-  const { isLoading, isError, data, error } = useQuery<Tcomment[], AxiosError>(
-    ['comment', shopId],
-    () => fetchComments(shopId),
-  );
+  const {
+    isLoading: menuLoading,
+    isError: isMenuError,
+    data: menuState,
+  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => getMenu(shopId));
 
-  console.log('data', data, 'isError', isError);
+  const {
+    isLoading: shopLoading,
+    isError: isShopError,
+    data: shopState,
+  } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId));
 
   const updateCommentState = useCallback(() => {
     setUpdated((current) => !current);
   }, []);
 
-  const fetchCommentState = async (shopId: number) => {
-    const commentState = await getComment(shopId);
-    setCommentState(commentState);
-  };
+  // const fetchShopState = async (shopId: number) => {
+  //   const [shopState, menuState] = await Promise.all([getShop(shopId), getMenu(shopId)]);
+  //   setShopState(shopState);
+  //   setMenuState(menuState);
+  // // };
 
-  const fetchShopState = async (shopId: number) => {
-    const [shopState, menuState] = await Promise.all([getShop(shopId), getMenu(shopId)]);
-    setShopState(shopState);
-    setMenuState(menuState);
-  };
+  // const fetchInitialData = async () => {
+  //   await fetchCommentState(shopId);
+  //   await fetchShopState(shopId);
+  // };
 
-  const fetchInitialData = async () => {
-    await fetchCommentState(shopId);
-    await fetchShopState(shopId);
-    // setLoading(false);
-  };
+  // useEffect(() => {
+  //   fetchInitialData();
+  // }, []);
 
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
+  // useEffect(() => {
+  //   fetchCommentState(shopId);
+  // }, [update]);
 
-  useEffect(() => {
-    fetchCommentState(shopId);
-  }, [update]);
+  const makeImgArr = useCallback(
+    (shopState: Shops, menuState: Menu[]) => {
+      const imgArr = [];
+      imgArr.push(shopState?.shopPicture);
+      imgArr.push(shopState?.menu);
+      menuState.forEach((menu) => {
+        imgArr.push(menu.picture);
+      });
 
-  const makeImgArr = useCallback(() => {
-    const imgArr = [];
-    imgArr.push(shopState.shopPicture);
-    imgArr.push(shopState.menu);
-    menuState.forEach((menu) => {
-      imgArr.push(menu.picture);
-    });
+      return [...imgArr];
+    },
+    [menuState, shopState],
+  );
 
-    return [...imgArr];
-  }, [shopState, menuState]);
+  if (commentLoading || menuLoading || shopLoading) {
+    return <S.CommentContainer>로딩중</S.CommentContainer>;
+  }
 
-  const imageArr = useMemo(() => makeImgArr(), [makeImgArr]);
+  if (isCommentError || isMenuError || isShopError) {
+    return <S.CommentContainer>Error 발생</S.CommentContainer>;
+  }
 
   return (
     <S.Pagecontainer ref={scrollRef}>
-      {isLoading ? (
-        'isLoading...'
-      ) : (
-        <>
-          <NavBar />
-          <DetailSlider imageArr={imageArr} />
-          {<Content shop={shopState} />}
-          <Comment
+      <NavBar />
+      <DetailSlider imageArr={makeImgArr(shopState, menuState)} />
+      {<Content shop={shopState} />}
+      <Comment
+        updateCommentState={updateCommentState}
+        shopId={shopState?.shopId}
+        scrollRef={scrollRef}
+      />
+      <S.CommentContainer>
+        {commentState?.map((comment) => (
+          <CommentList
+            key={comment.commentId}
+            commentProp={comment}
             updateCommentState={updateCommentState}
-            shopId={shopState.shopId}
-            scrollRef={scrollRef}
           />
-          <S.CommentContainer>
-            {commentState.map((comment) => (
-              <CommentList
-                key={comment.commentId}
-                commentProp={comment}
-                updateCommentState={updateCommentState}
-              />
-            ))}
-          </S.CommentContainer>
-          <Footer />
-        </>
-      )}
+        ))}
+      </S.CommentContainer>
+      <Footer />
     </S.Pagecontainer>
   );
 };
