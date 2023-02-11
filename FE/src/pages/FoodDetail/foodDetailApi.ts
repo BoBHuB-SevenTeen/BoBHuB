@@ -2,8 +2,6 @@ import * as API from '../../api/API';
 import { PostComment } from '../../type/commentType';
 import { PostParty } from '../../type/partyType';
 
-export const getComment = async (shopId: number) => await API.get(`/api/comments?shopId=${shopId}`);
-
 export const getShop = async (shopId: number) => await API.get(`/api/shops/${shopId}`);
 
 export const getMenu = async (shopId: number) => await API.get(`/api/food?shopId=${shopId}`);

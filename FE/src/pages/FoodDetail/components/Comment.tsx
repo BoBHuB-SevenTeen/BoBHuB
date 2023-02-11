@@ -8,7 +8,7 @@ import * as S from '../styles/commentStyle';
 
 interface commnetProps {
   updateCommentState: () => void;
-  shopId: number;
+  shopId: number | undefined;
   scrollRef: React.RefObject<HTMLElement>;
 }
 
