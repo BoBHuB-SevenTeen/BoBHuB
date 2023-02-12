@@ -9,7 +9,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PostComment } from '../../../type/commentType';
 
 interface commnetProps {
-  // updateCommentState: () => void;
   shopId: number | undefined;
   scrollRef: React.RefObject<HTMLElement>;
 }
