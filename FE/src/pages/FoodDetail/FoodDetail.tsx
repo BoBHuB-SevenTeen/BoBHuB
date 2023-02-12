@@ -39,25 +39,6 @@ const FoodDetail = () => {
     data: shopState,
   } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId), {});
 
-  // const fetchShopState = async (shopId: number) => {
-  //   const [shopState, menuState] = await Promise.all([getShop(shopId), getMenu(shopId)]);
-  //   setShopState(shopState);
-  //   setMenuState(menuState);
-  // // };
-
-  // const fetchInitialData = async () => {
-  //   await fetchCommentState(shopId);
-  //   await fetchShopState(shopId);
-  // };
-
-  // useEffect(() => {
-  //   fetchInitialData();
-  // }, []);
-
-  // useEffect(() => {
-  //   fetchCommentState(shopId);
-  // }, [update]);
-
   const makeImgArr = useCallback(
     (shopState: Shops, menuState: Menu[]) => {
       const imgArr = [];
@@ -88,7 +69,7 @@ const FoodDetail = () => {
       <Comment shopId={shopState?.shopId} scrollRef={scrollRef} />
       <S.CommentContainer>
         {commentState?.map((comment) => (
-          <CommentList key={comment.commentId} commentProp={comment} />
+          <CommentList key={comment.commentId} commentProp={comment} shopId={shopId} />
         ))}
       </S.CommentContainer>
       <Footer />
