@@ -13,7 +13,7 @@ import { Shops } from '../../type/shopType';
 import { Menu } from '../../type/menuType';
 import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { fetchComments } from '../../queries/comment/useCommentQuery';
 
@@ -26,19 +26,25 @@ const FoodDetail = () => {
     isLoading: commentLoading,
     isError: isCommentError,
     data: commentState,
-  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId));
+  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId), {
+    staleTime: 1000 * 60 * 5,
+  });
 
   const {
     isLoading: menuLoading,
     isError: isMenuError,
     data: menuState,
-  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => getMenu(shopId));
+  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => getMenu(shopId), {
+    staleTime: 1000 * 60 * 5,
+  });
 
   const {
     isLoading: shopLoading,
     isError: isShopError,
     data: shopState,
-  } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId));
+  } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId), {
+    staleTime: 1000 * 60 * 5,
+  });
 
   const updateCommentState = useCallback(() => {
     setUpdated((current) => !current);
