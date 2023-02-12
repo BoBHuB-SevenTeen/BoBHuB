@@ -26,8 +26,6 @@ export const deleteComment = async (commentId: number) => {
   console.log(res);
 };
 
-export const getParties = async () => await API.get(`/api/parties`);
-
 export const postParty = async (party: PostParty) => {
   const message = await API.post(`/api/parties`, party);
   return message;

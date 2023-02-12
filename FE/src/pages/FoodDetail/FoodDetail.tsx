@@ -26,25 +26,19 @@ const FoodDetail = () => {
     isLoading: commentLoading,
     isError: isCommentError,
     data: commentState,
-  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId), {
-    staleTime: 1000 * 60 * 5,
-  });
+  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId), {});
 
   const {
     isLoading: menuLoading,
     isError: isMenuError,
     data: menuState,
-  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => getMenu(shopId), {
-    staleTime: 1000 * 60 * 5,
-  });
+  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => getMenu(shopId), {});
 
   const {
     isLoading: shopLoading,
     isError: isShopError,
     data: shopState,
-  } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId), {
-    staleTime: 1000 * 60 * 5,
-  });
+  } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId), {});
 
   const updateCommentState = useCallback(() => {
     setUpdated((current) => !current);
