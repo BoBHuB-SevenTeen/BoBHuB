@@ -8,19 +8,23 @@ import React from 'react';
 import type { Tcomment } from '../../../type/commentType';
 import * as S from '../styles/commentListStyle';
 import useUser from './../../../queries/useUserQuery';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface CommentList {
   commentProp: Tcomment;
+  shopId: number;
 }
 
 const CommentList = ({
   commentProp: { commentId, userId, content, star, profile, nickname },
-}: // updateCommentState,
-CommentList) => {
+  shopId,
+}: CommentList) => {
   const [canRevise, setRevise] = useState<boolean>(false);
   const [canReadOnly, setReadOnly] = useState<boolean>(true);
   const [commentStar, setCommentStar] = useState<number | null>(star);
   const { data: user, isSuccess } = useUser();
+  const mutateComment = useMutation((commentId: number) => deleteComment(commentId));
+  const queryClient = useQueryClient();
 
   const handleRevise = (e: React.MouseEvent<HTMLButtonElement>) => {
     setRevise(true);
@@ -30,9 +34,16 @@ CommentList) => {
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) =>
     setCommentStar(newValue);
 
-  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, commentId: number) => {
-    await deleteComment(commentId);
-    // updateCommentState();
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, commentId: number) => {
+    mutateComment.mutate(commentId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['comment', shopId], { exact: true });
+        alert('댓글을 삭제하였습니다.');
+      },
+      onError: () => {
+        alert('요청에 실패하였습니다.');
+      },
+    });
   };
 
   const updateRevise = useCallback((bool: boolean) => {
