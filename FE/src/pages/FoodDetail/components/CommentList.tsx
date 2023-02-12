@@ -11,13 +11,12 @@ import useUser from './../../../queries/useUserQuery';
 
 interface CommentList {
   commentProp: Tcomment;
-  updateCommentState: () => void;
 }
 
 const CommentList = ({
   commentProp: { commentId, userId, content, star, profile, nickname },
-  updateCommentState,
-}: CommentList) => {
+}: // updateCommentState,
+CommentList) => {
   const [canRevise, setRevise] = useState<boolean>(false);
   const [canReadOnly, setReadOnly] = useState<boolean>(true);
   const [commentStar, setCommentStar] = useState<number | null>(star);
@@ -33,7 +32,7 @@ const CommentList = ({
 
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, commentId: number) => {
     await deleteComment(commentId);
-    updateCommentState();
+    // updateCommentState();
   };
 
   const updateRevise = useCallback((bool: boolean) => {

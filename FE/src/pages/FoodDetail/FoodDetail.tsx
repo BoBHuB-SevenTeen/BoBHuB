@@ -18,7 +18,6 @@ import { AxiosError } from 'axios';
 import { fetchComments } from '../../queries/comment/useCommentQuery';
 
 const FoodDetail = () => {
-  const [update, setUpdated] = useState<boolean>(false);
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
 
@@ -39,10 +38,6 @@ const FoodDetail = () => {
     isError: isShopError,
     data: shopState,
   } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId), {});
-
-  const updateCommentState = useCallback(() => {
-    setUpdated((current) => !current);
-  }, []);
 
   // const fetchShopState = async (shopId: number) => {
   //   const [shopState, menuState] = await Promise.all([getShop(shopId), getMenu(shopId)]);
@@ -90,18 +85,10 @@ const FoodDetail = () => {
       <NavBar />
       <DetailSlider imageArr={makeImgArr(shopState, menuState)} />
       {<Content shop={shopState} />}
-      <Comment
-        updateCommentState={updateCommentState}
-        shopId={shopState?.shopId}
-        scrollRef={scrollRef}
-      />
+      <Comment shopId={shopState?.shopId} scrollRef={scrollRef} />
       <S.CommentContainer>
         {commentState?.map((comment) => (
-          <CommentList
-            key={comment.commentId}
-            commentProp={comment}
-            updateCommentState={updateCommentState}
-          />
+          <CommentList key={comment.commentId} commentProp={comment} />
         ))}
       </S.CommentContainer>
       <Footer />
