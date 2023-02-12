@@ -11,13 +11,11 @@ export const postComment = async (comment: PostComment) => {
 };
 
 export const patchComment = async (comment: PostComment, commentId: number) => {
-  const res = await API.patch(`/api/comments/${commentId}`, comment);
-  console.log(res);
+  return await API.patch(`/api/comments/${commentId}`, comment);
 };
 
 export const deleteComment = async (commentId: number) => {
-  const res = await API.delete(`/api/comments/${commentId}`);
-  console.log(res);
+  return await API.delete(`/api/comments/${commentId}`);
 };
 
 export const postParty = async (party: PostParty) => {
