@@ -5,19 +5,23 @@ import type { RootState } from '../../../store/store';
 import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
 import * as S from '../styles/commentStyle';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { PostComment } from '../../../type/commentType';
 
 interface commnetProps {
-  updateCommentState: () => void;
+  // updateCommentState: () => void;
   shopId: number | undefined;
   scrollRef: React.RefObject<HTMLElement>;
 }
 
 type createCommentType = React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>;
 
-const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
+const Comment = ({ shopId, scrollRef }: commnetProps) => {
   const [content, setContent] = useState<string>('');
   const [starValue, setStarValue] = useState<number | null>(5);
   const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin) as boolean;
+  const mutateParty = useMutation((comment: PostComment) => postComment(comment));
+  const queryClient = useQueryClient();
 
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) => setStarValue(newValue);
   const fieldChange = (e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value);
@@ -30,12 +34,17 @@ const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
       content,
       star: starValue,
     };
-    const response = await postComment(newComment);
-    if (response?.message) {
-      updateCommentState();
-      scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-      setContent('');
-    }
+
+    mutateParty.mutate(newComment, {
+      onSuccess: () => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        setContent('');
+        queryClient.invalidateQueries(['comment', shopId]);
+      },
+      onError: () => {
+        alert('댓글을 이미 작성하셨습니다.');
+      },
+    });
   };
 
   return (
