@@ -10,7 +10,12 @@ export const postComment = async (comment: PostComment) => {
   return await API.post('/api/comments', comment);
 };
 
-export const patchComment = async (comment: PostComment, commentId: number) => {
+type PatchComment = {
+  comment: PostComment;
+  commentId: number;
+};
+
+export const patchComment = async ({ comment, commentId }: PatchComment) => {
   return await API.patch(`/api/comments/${commentId}`, comment);
 };
 
