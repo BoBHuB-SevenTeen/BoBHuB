@@ -23,7 +23,7 @@ const CommentList = ({
   const [canReadOnly, setReadOnly] = useState<boolean>(true);
   const [commentStar, setCommentStar] = useState<number | null>(star);
   const { data: user, isSuccess } = useUser();
-  const mutateComment = useMutation((commentId: number) => deleteComment(commentId));
+  const mutateComment = useMutation(deleteComment);
   const queryClient = useQueryClient();
 
   const handleRevise = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -72,6 +72,7 @@ const CommentList = ({
           />
           <TextArea
             commentId={commentId}
+            shopId={shopId}
             commentStar={commentStar}
             content={content}
             canRevise={canRevise}

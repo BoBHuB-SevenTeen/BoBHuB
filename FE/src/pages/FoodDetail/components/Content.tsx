@@ -28,7 +28,7 @@ const Content = ({ shop }: Contentype) => {
     ?.filter((party) => party.likedNum !== party.partyLimit)
     .find((party) => party.shopId === shop.shopId);
 
-  const mutateParty = useMutation((party: PostParty) => postParty(party));
+  const mutateParty = useMutation(postParty);
   const queryClient = useQueryClient();
 
   useEffect(() => {
