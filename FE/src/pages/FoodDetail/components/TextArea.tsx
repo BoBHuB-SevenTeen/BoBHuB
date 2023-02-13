@@ -1,11 +1,14 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useState } from 'react';
+import { PostComment } from '../../../type/commentType';
 import { NullableNum } from '../../../type/utilType';
 import { patchComment } from '../foodDetailApi';
 import * as S from '../styles/textAreaStyle';
 
 interface TextAreaProps {
   commentId: number;
+  shopId: number;
   commentStar: NullableNum;
   content: string;
   canRevise: boolean;
@@ -15,6 +18,7 @@ interface TextAreaProps {
 
 const TextArea = ({
   commentId,
+  shopId,
   commentStar,
   content,
   canRevise,
@@ -22,6 +26,8 @@ const TextArea = ({
   updateReadOnly,
 }: TextAreaProps) => {
   const [textValue, setTextValue] = useState<string>(content);
+  const mutateComment = useMutation(patchComment);
+  const queryClient = useQueryClient();
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.target.value);
@@ -41,7 +47,17 @@ const TextArea = ({
       content: textValue,
     };
 
-    await patchComment(reviseComment, commentId);
+    mutateComment.mutate(
+      { comment: reviseComment, commentId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['comment', shopId], { exact: true });
+        },
+        onError: () => {
+          alert('요청에 실패하였습니다.');
+        },
+      },
+    );
     updateRevise(false);
     updateReadOnly(true);
   };
