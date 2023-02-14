@@ -3,57 +3,25 @@ import Comment from './components/Comment';
 import CommentList from './components/CommentList';
 import Footer from '../../components/Footer';
 import NavBar from '../../components/NavBar';
-import { initialShopState } from '../../type/utilType';
 import Content from './components/Content';
 import DetailSlider from './components/DetailSlider';
-import { getShop, getMenu } from './foodDetailApi';
 import { useParams } from 'react-router';
 import React from 'react';
-import { Shops } from '../../type/shopType';
-import { Menu } from '../../type/menuType';
-import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
-import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { fetchComments } from '../../queries/comment/useCommentQuery';
+import { useCommentQuery } from '../../queries/comment/useCommentQuery';
+import { useMenuQuery } from '../../queries/menu/useMenuQuery';
+import { makeImgArr } from './util/foodDetailUtil';
+import { useShopQuery } from '../../queries/shop/useShopQuery';
 
 const FoodDetail = () => {
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
 
-  const {
-    isLoading: commentLoading,
-    isError: isCommentError,
-    data: commentState,
-  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId), {});
+  const { isCommentLoading, isCommentError, commentState } = useCommentQuery(shopId);
+  const { isMenuLoading, isMenuError, menuState } = useMenuQuery(shopId);
+  const { isShopLoading, isShopError, shopState } = useShopQuery(shopId);
 
-  const {
-    isLoading: menuLoading,
-    isError: isMenuError,
-    data: menuState,
-  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => getMenu(shopId), {});
-
-  const {
-    isLoading: shopLoading,
-    isError: isShopError,
-    data: shopState,
-  } = useQuery<Shops, AxiosError>(['shop', shopId], () => getShop(shopId), {});
-
-  const makeImgArr = useCallback(
-    (shopState: Shops, menuState: Menu[]) => {
-      const imgArr = [];
-      imgArr.push(shopState?.shopPicture);
-      imgArr.push(shopState?.menu);
-      menuState.forEach((menu) => {
-        imgArr.push(menu.picture);
-      });
-
-      return [...imgArr];
-    },
-    [menuState, shopState],
-  );
-
-  if (commentLoading || menuLoading || shopLoading) {
+  if (isCommentLoading || isMenuLoading || isShopLoading) {
     return <S.CommentContainer>로딩중</S.CommentContainer>;
   }
 
@@ -65,7 +33,7 @@ const FoodDetail = () => {
     <S.Pagecontainer ref={scrollRef}>
       <NavBar />
       <DetailSlider imageArr={makeImgArr(shopState, menuState)} />
-      {<Content shop={shopState} />}
+      <Content shop={shopState} />
       <Comment shopId={shopState?.shopId} scrollRef={scrollRef} />
       <S.CommentContainer>
         {commentState?.map((comment) => (
