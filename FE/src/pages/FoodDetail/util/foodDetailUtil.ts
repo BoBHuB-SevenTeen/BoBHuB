@@ -1,3 +1,5 @@
+import { Menu } from '../../../type/menuType';
+import { Shops } from '../../../type/shopType';
 import { NullableNum } from '../../../type/utilType';
 
 export const canWriteComment = (isLogin: boolean, content: string, starValue: NullableNum) => {
@@ -14,6 +16,17 @@ export const canWriteComment = (isLogin: boolean, content: string, starValue: Nu
     return true;
   }
   return false;
+};
+
+export const makeImgArr = (shopState: Shops, menuState: Menu[]) => {
+  const imgArr = [];
+  imgArr.push(shopState?.shopPicture);
+  imgArr.push(shopState?.menu);
+  menuState.forEach((menu) => {
+    imgArr.push(menu.picture);
+  });
+
+  return [...imgArr];
 };
 
 export const onRender = (
