@@ -10,6 +10,7 @@ import useActiveParties from './../../../queries/useActivePartyQuery';
 import useMyParties from './../../../queries/useMyPartiesQuery';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PostParty } from '../../../type/partyType';
+import { useMutateParty } from '../../../queries/party/useMutateParty';
 
 interface Contentype {
   shop: Shops;
@@ -28,8 +29,16 @@ const Content = ({ shop }: Contentype) => {
     ?.filter((party) => party.likedNum !== party.partyLimit)
     .find((party) => party.shopId === shop.shopId);
 
-  const mutateParty = useMutation(postParty);
-  const queryClient = useQueryClient();
+  const onSuccessCb = () => {
+    socket.emit('createParty', '생성요청');
+    alert('식당모임이 생성되었습니다.');
+  };
+
+  const onErrorCb = () => {
+    alert('요청에 실패하였습니다.');
+  };
+
+  const { mutation: mutateParty } = useMutateParty({ onSuccessCb, onErrorCb });
 
   useEffect(() => {
     if (currentParty) {
@@ -54,16 +63,7 @@ const Content = ({ shop }: Contentype) => {
       timeLimit: 30,
     };
 
-    mutateParty.mutate(party, {
-      onSuccess: () => {
-        socket.emit('createParty', '생성요청');
-        queryClient.invalidateQueries(['parties']);
-        alert('식당모임이 생성되었습니다.');
-      },
-      onError: () => {
-        alert('요청에 실패하였습니다.');
-      },
-    });
+    mutateParty.mutate(party);
   };
 
   const clickJoinButton = (partyId: number) => {
