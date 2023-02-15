@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
 import * as S from '../styles/commentStyle';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { PostComment } from '../../../type/commentType';
 
 interface commnetProps {
   shopId: number | undefined;
@@ -19,7 +18,7 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
   const [content, setContent] = useState<string>('');
   const [starValue, setStarValue] = useState<number | null>(5);
   const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin) as boolean;
-  const mutateParty = useMutation((comment: PostComment) => postComment(comment));
+  const mutateParty = useMutation(postComment);
   const queryClient = useQueryClient();
 
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) => setStarValue(newValue);
