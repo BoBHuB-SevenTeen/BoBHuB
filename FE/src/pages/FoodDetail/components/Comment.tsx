@@ -1,11 +1,9 @@
 import { Button, Typography, Rating } from '@mui/material';
 import React, { useState } from 'react';
-import { postComment } from '../foodDetailApi';
 import type { RootState } from '../../../store/store';
 import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
 import * as S from '../styles/commentStyle';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCreateComment } from '../../../queries/comment/useCreateComment';
 
 interface commnetProps {
@@ -32,9 +30,9 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
     alert('댓글을 이미 작성하셨습니다.');
   };
 
-  const { mutation: mutateComment } = useCreateComment({ onSuccessCb, onErrorCb, shopId });
+  const { mutation: createComment } = useCreateComment({ onSuccessCb, onErrorCb, shopId });
 
-  const createComment = async (e: createCommentType) => {
+  const handleCreateComment = async (e: createCommentType) => {
     e.preventDefault();
     if (canWriteComment(isLogin, content, starValue)) return;
     const newComment = {
@@ -43,11 +41,11 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
       star: starValue,
     };
 
-    mutateComment.mutate(newComment);
+    createComment.mutate(newComment);
   };
 
   return (
-    <S.CommentContainer onSubmit={createComment}>
+    <S.CommentContainer>
       <S.RatingContainer>
         <Typography component="legend">식당은 어땠나요?</Typography>
         <Rating name="simple-controlled" value={starValue} onChange={ratingChange} />
@@ -59,7 +57,7 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
         value={content}
         onChange={fieldChange}
       />
-      <Button variant="outlined" onClick={createComment}>
+      <Button variant="outlined" onClick={handleCreateComment}>
         Enter
       </Button>
     </S.CommentContainer>
