@@ -1,10 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useState } from 'react';
-import { PostComment } from '../../../type/commentType';
+import { usePatchComment } from '../../../queries/comment/usePatchComment';
 import { NullableNum } from '../../../type/utilType';
-import { patchComment } from '../foodDetailApi';
 import * as S from '../styles/textAreaStyle';
+import { validateText } from '../util/foodDetailUtil';
 
 interface TextAreaProps {
   commentId: number;
@@ -26,40 +25,28 @@ const TextArea = ({
   updateReadOnly,
 }: TextAreaProps) => {
   const [textValue, setTextValue] = useState<string>(content);
-  const mutateComment = useMutation(patchComment);
-  const queryClient = useQueryClient();
+
+  const onSuccessCb = () => {
+    updateRevise(false);
+    updateReadOnly(true);
+  };
+
+  const onErrorCb = () => {
+    alert('요청에 실패하였습니다.');
+  };
+  const { mutation: patchComment } = usePatchComment({ onSuccessCb, onErrorCb, shopId });
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.target.value);
   };
 
   const reviseEnd = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (textValue === '') {
-      alert('댓글을 입력해주세요');
-      return;
-    }
-    if (commentStar === null) {
-      alert('별점을 입력해주세요');
-      return;
-    }
+    if (validateText(textValue, commentStar)) return;
     const reviseComment = {
       star: commentStar,
       content: textValue,
     };
-
-    mutateComment.mutate(
-      { comment: reviseComment, commentId },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(['comment', shopId], { exact: true });
-        },
-        onError: () => {
-          alert('요청에 실패하였습니다.');
-        },
-      },
-    );
-    updateRevise(false);
-    updateReadOnly(true);
+    patchComment.mutate({ comment: reviseComment, commentId });
   };
 
   return (
