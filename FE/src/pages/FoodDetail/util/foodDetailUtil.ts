@@ -18,6 +18,18 @@ export const canWriteComment = (isLogin: boolean, content: string, starValue: Nu
   return false;
 };
 
+export const validateText = (textValue: string, commentStar: NullableNum) => {
+  if (textValue === '') {
+    alert('댓글을 입력해주세요');
+    return true;
+  }
+  if (commentStar === null) {
+    alert('별점을 입력해주세요');
+    return true;
+  }
+  return false;
+};
+
 export const makeImgArr = (shopState: Shops, menuState: Menu[]) => {
   const imgArr = [];
   imgArr.push(shopState?.shopPicture);
