@@ -3,12 +3,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
 import { useCallback, useState } from 'react';
 import TextArea from './TextArea';
-import { deleteComment } from '../foodDetailApi';
 import React from 'react';
 import type { Tcomment } from '../../../type/commentType';
 import * as S from '../styles/commentListStyle';
 import useUser from './../../../queries/useUserQuery';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useDeleteComment } from '../../../queries/comment/useDeleteComment';
 
 interface CommentList {
   commentProp: Tcomment;
@@ -23,8 +22,14 @@ const CommentList = ({
   const [canReadOnly, setReadOnly] = useState<boolean>(true);
   const [commentStar, setCommentStar] = useState<number | null>(star);
   const { data: user, isSuccess } = useUser();
-  const mutateComment = useMutation(deleteComment);
-  const queryClient = useQueryClient();
+  const onSuccessCb = () => {
+    alert('댓글을 삭제하였습니다.');
+  };
+  const onErrorCb = () => {
+    alert('요청에 실패하였습니다.');
+  };
+
+  const { mutation: deleteComment } = useDeleteComment({ onSuccessCb, onErrorCb, shopId });
 
   const handleRevise = (e: React.MouseEvent<HTMLButtonElement>) => {
     setRevise(true);
@@ -35,15 +40,7 @@ const CommentList = ({
     setCommentStar(newValue);
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, commentId: number) => {
-    mutateComment.mutate(commentId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['comment', shopId], { exact: true });
-        alert('댓글을 삭제하였습니다.');
-      },
-      onError: () => {
-        alert('요청에 실패하였습니다.');
-      },
-    });
+    deleteComment.mutate(commentId);
   };
 
   const updateRevise = useCallback((bool: boolean) => {
