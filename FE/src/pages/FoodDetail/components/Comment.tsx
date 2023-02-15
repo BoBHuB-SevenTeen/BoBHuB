@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
 import * as S from '../styles/commentStyle';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCreateComment } from '../../../queries/comment/useCreateComment';
 
 interface commnetProps {
   shopId: number | undefined;
@@ -18,11 +19,20 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
   const [content, setContent] = useState<string>('');
   const [starValue, setStarValue] = useState<number | null>(5);
   const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin) as boolean;
-  const mutateParty = useMutation(postComment);
-  const queryClient = useQueryClient();
 
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) => setStarValue(newValue);
   const fieldChange = (e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value);
+
+  const onSuccessCb = () => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    setContent('');
+  };
+
+  const onErrorCb = () => {
+    alert('댓글을 이미 작성하셨습니다.');
+  };
+
+  const { mutation: mutateComment } = useCreateComment({ onSuccessCb, onErrorCb, shopId });
 
   const createComment = async (e: createCommentType) => {
     e.preventDefault();
@@ -33,16 +43,7 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
       star: starValue,
     };
 
-    mutateParty.mutate(newComment, {
-      onSuccess: () => {
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-        setContent('');
-        queryClient.invalidateQueries(['comment', shopId]);
-      },
-      onError: () => {
-        alert('댓글을 이미 작성하셨습니다.');
-      },
-    });
+    mutateComment.mutate(newComment);
   };
 
   return (
