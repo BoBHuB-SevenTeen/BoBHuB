@@ -16,8 +16,8 @@ export const useCreateComment = ({ onSuccessCb, onErrorCb, shopId }: UseCreateCo
   const queryClient = useQueryClient();
   const mutation = useMutation(postComment, {
     onSuccess: () => {
-      onSuccessCb();
       queryClient.invalidateQueries(['comment', shopId]);
+      onSuccessCb();
     },
     onError: () => {
       onErrorCb();
