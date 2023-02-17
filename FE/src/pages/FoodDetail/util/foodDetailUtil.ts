@@ -18,7 +18,7 @@ export const canWriteComment = (isLogin: boolean, content: string, starValue: Nu
   return false;
 };
 
-export const validateText = (textValue: string, commentStar: NullableNum) => {
+export const inValidateText = (textValue: string, commentStar: NullableNum) => {
   if (textValue === '') {
     alert('댓글을 입력해주세요');
     return true;

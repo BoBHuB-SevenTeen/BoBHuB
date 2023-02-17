@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { usePatchComment } from '../../../queries/comment/usePatchComment';
 import { NullableNum } from '../../../type/utilType';
 import * as S from '../styles/textAreaStyle';
-import { validateText } from '../util/foodDetailUtil';
+import { inValidateText } from '../util/foodDetailUtil';
 
 interface TextAreaProps {
   commentId: number;
@@ -41,7 +41,7 @@ const TextArea = ({
   };
 
   const reviseEnd = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (validateText(textValue, commentStar)) return;
+    if (inValidateText(textValue, commentStar)) return;
     const reviseComment = {
       star: commentStar,
       content: textValue,
