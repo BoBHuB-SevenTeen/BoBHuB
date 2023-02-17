@@ -40,7 +40,7 @@ const TextArea = ({
     setTextValue(e.target.value);
   };
 
-  const reviseEnd = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const reviseEnd = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (inValidateText(textValue, commentStar)) return;
     const reviseComment = {
       star: commentStar,
