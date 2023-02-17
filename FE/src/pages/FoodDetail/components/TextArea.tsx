@@ -42,11 +42,11 @@ const TextArea = ({
 
   const reviseEnd = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (inValidateText(textValue, commentStar)) return;
-    const reviseComment = {
+    const revisedComment = {
       star: commentStar,
       content: textValue,
     };
-    patchComment.mutate({ comment: reviseComment, commentId });
+    patchComment.mutate({ comment: revisedComment, commentId });
   };
 
   return (
