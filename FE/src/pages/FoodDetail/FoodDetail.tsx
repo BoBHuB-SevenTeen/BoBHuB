@@ -45,4 +45,4 @@ const FoodDetail = () => {
   );
 };
 
-export default React.memo(FoodDetail);
+export default FoodDetail;
