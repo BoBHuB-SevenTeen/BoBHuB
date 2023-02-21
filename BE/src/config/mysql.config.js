@@ -2,20 +2,20 @@ module.exports = function (user) {
   switch (user) {
     case "ec2":
       return {
-        user: process.env.EC2_MYSQL_USER,
-        password: process.env.EC2_MYSQL_PASSWORD,
+        user: process.env.RDS_MYSQL_USER,
+        password: process.env.RDS_MYSQL_PASSWORD,
         database: "bob_hub",
-        host: process.env.EC2_MYSQL_HOST,
+        host: process.env.RDS_MYSQL_HOST,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,
       };
     case "production":
       return {
-        user: process.env.EC2_MYSQL_USER,
-        password: process.env.EC2_MYSQL_PASSWORD,
+        user: process.env.RDS_MYSQL_USER,
+        password: process.env.RDS_MYSQL_PASSWORD,
         database: "bob_hub",
-        host: process.env.EC2_MYSQL_HOST,
+        host: process.env.RDS_MYSQL_HOST,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,
