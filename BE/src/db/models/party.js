@@ -1,4 +1,4 @@
-const { pool } = require("../mysql-pool");
+const { pool } = require("../index");
 const o = new (require("../../utils/build-query"))("party");
 
 const { buildRes, logger } = require("../../utils");

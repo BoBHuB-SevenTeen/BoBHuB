@@ -1,6 +1,6 @@
 module.exports = function (user) {
   switch (user) {
-    case "ec2":
+    case "dev":
       return {
         user: process.env.RDS_MYSQL_USER,
         password: process.env.RDS_MYSQL_PASSWORD,
