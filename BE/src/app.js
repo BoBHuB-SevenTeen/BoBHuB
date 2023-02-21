@@ -5,7 +5,7 @@ const passportConfig = require("./passport");
 const sessionConfig = require("./config/session.config");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-require("./db/models");
+require("./db");
 require("dotenv").config();
 const {
   categoryRouter,

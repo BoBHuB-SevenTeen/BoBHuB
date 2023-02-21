@@ -1,4 +1,4 @@
-const { pool } = require("../mysql-pool");
+const { pool } = require("../index");
 const buildQuery = require("../../utils/build-query");
 const tr = new buildQuery("track");
 const o = new buildQuery("generation");
