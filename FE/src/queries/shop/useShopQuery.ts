@@ -12,7 +12,11 @@ export const useShopQuery = (shopId: number) => {
     isError: isShopError,
     data: shopState = initialShopState,
     isSuccess,
-  } = useQuery<Shops, AxiosError>(['shop', shopId], () => fetchShop(shopId));
+  } = useQuery<Shops, AxiosError>(['shop', shopId], () => fetchShop(shopId), {
+    refetchOnMount: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   return { isShopLoading, isShopError, shopState, isSuccess };
 };
