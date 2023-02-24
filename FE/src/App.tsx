@@ -17,11 +17,14 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      retry: 0,
+      retry: 1,
       staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 5,
     },
   },
 });
+
+console.log(queryClient);
 
 function App() {
   return (
