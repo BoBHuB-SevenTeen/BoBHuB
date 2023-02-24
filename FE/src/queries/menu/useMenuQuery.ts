@@ -11,7 +11,11 @@ export const useMenuQuery = (shopId: number) => {
     isError: isMenuError,
     data: menuState = [],
     isSuccess,
-  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => fetchMenu(shopId));
+  } = useQuery<Menu[], AxiosError>(['menu', shopId], () => fetchMenu(shopId), {
+    refetchOnMount: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   return { isMenuLoading, isMenuError, menuState, isSuccess };
 };
