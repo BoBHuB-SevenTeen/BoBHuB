@@ -12,6 +12,7 @@ import { useCommentQuery } from '../../queries/comment/useCommentQuery';
 import { useMenuQuery } from '../../queries/menu/useMenuQuery';
 import { makeImgArr } from './util/foodDetailUtil';
 import { useShopQuery } from '../../queries/shop/useShopQuery';
+import Spinner from '../../components/Spinner';
 
 const FoodDetail = () => {
   const scrollRef = useRef<HTMLElement>(null);
@@ -22,7 +23,7 @@ const FoodDetail = () => {
   const { isShopLoading, isShopError, shopState } = useShopQuery(shopId);
 
   if (isCommentLoading || isMenuLoading || isShopLoading) {
-    return <S.CommentContainer>로딩중</S.CommentContainer>;
+    return <Spinner />;
   }
 
   if (isCommentError || isMenuError || isShopError) {
