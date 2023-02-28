@@ -13,11 +13,19 @@ export type Shops = {
   distance: number;
   address: string;
   menu: NullableString;
-  food?: Food[];
   shopPicture: NullableString;
   like: number;
   description: string;
   createdAt: NullableString;
   updatedAt: NullableString;
   deletedAt: NullableString;
+  food?: Food[];
+  avgStar?: string;
+};
+
+export type Category = {
+  category: string;
+  createdAt: NullableString;
+  deletedAt: NullableString;
+  updatedAt: NullableString;
 };
