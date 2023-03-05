@@ -1,6 +1,4 @@
-import { lazy, Suspense } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import Spinner from '../../components/Spinner';
 import FoodDetail from './FoodDetail';
 
 const FoodDetailMain = () => {
