@@ -6,29 +6,19 @@ import NavBar from '../../components/NavBar';
 import Content from './components/Content';
 import DetailSlider from './components/DetailSlider';
 import { useParams } from 'react-router';
-import React from 'react';
 import * as S from './styles/foodDetailStyle';
 import { useCommentQuery } from '../../queries/comment/useCommentQuery';
 import { useMenuQuery } from '../../queries/menu/useMenuQuery';
 import { makeImgArr } from './util/foodDetailUtil';
 import { useShopQuery } from '../../queries/shop/useShopQuery';
-import Spinner from '../../components/Spinner';
 
 const FoodDetail = () => {
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
 
-  const { isCommentLoading, isCommentError, commentState } = useCommentQuery(shopId);
-  const { isMenuLoading, isMenuError, menuState } = useMenuQuery(shopId);
-  const { isShopLoading, isShopError, shopState } = useShopQuery(shopId);
-
-  if (isCommentLoading || isMenuLoading || isShopLoading) {
-    return <Spinner />;
-  }
-
-  if (isCommentError || isMenuError || isShopError) {
-    return <S.CommentContainer>Error 발생</S.CommentContainer>;
-  }
+  const { commentState } = useCommentQuery(shopId);
+  const { menuState } = useMenuQuery(shopId);
+  const { shopState } = useShopQuery(shopId);
 
   return (
     <S.Pagecontainer ref={scrollRef}>
