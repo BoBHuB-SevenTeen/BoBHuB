@@ -12,7 +12,7 @@ import Spinner from './components/Spinner';
 import NotFound from './pages/NotFound/NotFound';
 
 const Admin = lazy(() => import('./pages/Admin/Admin'));
-const FoodDetail = lazy(() => import('./pages/FoodDetail/FoodDetail'));
+const FoodDetail = lazy(() => import('./pages/FoodDetail/FoodDetailMain'));
 const FoodList = lazy(() => import('./pages/FoodList/FoodList'));
 const Login = lazy(() => import('./pages/Login/Login'));
 const MainPage = lazy(() => import('./pages/MainPage/MainPage'));
