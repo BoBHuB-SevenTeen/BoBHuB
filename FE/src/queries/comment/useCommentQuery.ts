@@ -13,7 +13,9 @@ export const useCommentQuery = (shopId: number) => {
     isError: isCommentError,
     data: commentState,
     isSuccess,
-  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId));
+  } = useQuery<Tcomment[], AxiosError>(['comment', shopId], () => fetchComments(shopId), {
+    suspense: true,
+  });
 
   return { isCommentLoading, isCommentError, commentState, isSuccess };
 };
