@@ -16,6 +16,7 @@ export const useShopQuery = (shopId: number) => {
     refetchOnMount: false,
     staleTime: Infinity,
     cacheTime: Infinity,
+    suspense: true,
   });
 
   return { isShopLoading, isShopError, shopState, isSuccess };

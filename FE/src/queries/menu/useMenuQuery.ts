@@ -15,6 +15,7 @@ export const useMenuQuery = (shopId: number) => {
     refetchOnMount: false,
     staleTime: Infinity,
     cacheTime: Infinity,
+    suspense: true,
   });
 
   return { isMenuLoading, isMenuError, menuState, isSuccess };
