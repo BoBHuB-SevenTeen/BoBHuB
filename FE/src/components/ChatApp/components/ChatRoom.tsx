@@ -46,6 +46,7 @@ const ChatRoom = ({ roomKey }: ChatRoomProps) => {
 
   useEffect(() => {
     const log = localStorage.getItem(roomKey);
+
     if (log) {
       const logArr = JSON.parse(log);
       setMessage(logArr);
@@ -54,8 +55,7 @@ const ChatRoom = ({ roomKey }: ChatRoomProps) => {
     enterRoom();
 
     socket.on('getMessage', (messageInfo) => {
-      setLog(roomKey, messageInfo);
-      setMessage((current) => [...current, messageInfo]);
+      addMessage(messageInfo);
     });
   }, []);
 
