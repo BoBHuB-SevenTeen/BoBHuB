@@ -9,6 +9,7 @@ partyRouter.get("/", partyController.getAll);
 partyRouter.get("/my-party", isLoggedIn, partyController.getByUserId);
 partyRouter.get("/liked-party", isLoggedIn, partyController.getLikedParty);
 partyRouter.get("/:partyId", partyController.getById);
+partyRouter.get("/:partyId/likedNum", partyController.getLikedNum);
 partyRouter.patch("/:partyId", isLoggedIn, partyController.update);
 partyRouter.delete("/:partyId", isLoggedIn, partyController.delete);
 

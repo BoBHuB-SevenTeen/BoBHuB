@@ -1,5 +1,6 @@
 const { pool } = require("../index");
 const o = new (require("../../utils/build-query"))("party");
+const ln = new (require("../../utils/build-query"))("liked_num");
 
 const { buildRes, logger } = require("../../utils");
 const { ErrorFactory, commonErrors } = require("../../utils/error-factory");
@@ -14,13 +15,17 @@ class PartyModel {
       logger.info(query1);
 
       await conn.beginTransaction();
-
       const [createResult] = await conn.query(query1);
 
-      const query2 = `INSERT INTO pick (userId, partyId) 
+      const query2 = `INSERT INTO like_num (partyId, partyLimit) 
       VALUES(?, ?)`;
-      const params2 = [userId, createResult.insertId];
+      const params2 = [createResult.insertId, partyDTO.partyLimit];
       await conn.query(query2, params2);
+
+      const query3 = `INSERT INTO pick (userId, partyId) 
+      VALUES(?, ?)`;
+      const params3 = [userId, createResult.insertId];
+      await conn.query(query3, params3);
 
       await conn.commit();
       return buildRes("c", createResult);
@@ -79,14 +84,14 @@ class PartyModel {
     }
   }
 
-  async update(newPartyDTO, partyDTO) {
+  async getLikedNum(partyDTO) {
     try {
-      const newDTO = o.objToQueryArray(newPartyDTO);
-      const oldDTO = o.objToQueryArray(partyDTO);
-      const query = o.makeUpdateQuery(newDTO, oldDTO);
+      const whereArr = ln.objToQueryArray(partyDTO);
+      const query = ln.makeSelectQuery({ whereArr });
       logger.info(query);
-      const [result] = await pool.query(query);
-      return buildRes("u", result);
+
+      const [likedNums] = await pool.query(query);
+      return likedNums;
     } catch (e) {
       logger.error(e);
       throw new ErrorFactory(
@@ -94,6 +99,38 @@ class PartyModel {
         500,
         "요청한 내용으로 DB에서 처리할 수 없습니다."
       );
+    }
+  }
+
+  async update(newPartyDTO, partyDTO) {
+    const conn = await pool.getConnection();
+    try {
+      const newDTO = o.objToQueryArray(newPartyDTO);
+      const oldDTO = o.objToQueryArray(partyDTO);
+      const query1 = o.makeUpdateQuery(newDTO, oldDTO);
+      logger.info(query1);
+
+      await conn.beginTransaction();
+      const [updateResult] = await conn.query(query1);
+      if (newPartyDTO.partyLimit) {
+        const query2 = `UPDATE like_num SET partyLimit=? WHERE partyId=?`;
+        const params2 = [newPartyDTO.partyLimit, partyDTO.partyId];
+        logger.info(query2);
+        await conn.query(query2, params2);
+      }
+      await conn.commit();
+      return buildRes("u", updateResult);
+    } catch (e) {
+      logger.error(e);
+      await conn.rollback();
+
+      throw new ErrorFactory(
+        commonErrors.BAD_REQUEST,
+        400,
+        "이미 작성한 내역이 있는 식당이거나 Body의 요청 내용이 잘못되었습니다."
+      );
+    } finally {
+      conn.release();
     }
   }
 

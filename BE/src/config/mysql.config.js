@@ -26,6 +26,7 @@ module.exports = function (user) {
         password: process.env.LOCAL_MYSQL_PASSWORD,
         database: "bob_hub",
         host: "127.0.0.1",
+        port: 6000,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,

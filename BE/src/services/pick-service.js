@@ -9,13 +9,11 @@ class PickService {
 
   async joinParty(userId, partyId) {
     const result = await this.pickModel.create({ userId, partyId });
-    myCache.set("reParties", true);
     return result;
   }
 
   async leaveParty(userId, partyId) {
     const result = await this.pickModel.delete({ userId, partyId });
-    myCache.set("reParties", true);
     return result;
   }
 

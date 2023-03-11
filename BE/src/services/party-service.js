@@ -73,6 +73,14 @@ class PartyService {
     return parties;
   }
 
+  async getLikedNum(partyDTO) {
+    const likedNums = await this.partyModel.getLikedNum(partyDTO);
+    if (likedNums.length === 0) {
+      throw new ErrorFactory(commonErrors.NOT_FOUND, 404, "존재하는 모임이 없습니다.");
+    }
+    return likedNums[0];
+  }
+
   async update(newPartyDTO, partyId) {
     const existingParty = await this.partyModel.get({ partyId });
     if (existingParty.length === 0) {
