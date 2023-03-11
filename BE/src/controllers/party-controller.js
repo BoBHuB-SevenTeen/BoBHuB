@@ -65,6 +65,16 @@ class PartyController {
     }
   }
 
+  async getLikedNum(req, res, next) {
+    try {
+      const partyId = parseInt(req.params.partyId);
+      const likedNum = await partyService.getLikedNum({ partyId });
+      return res.status(200).json(likedNum);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async update(req, res, next) {
     try {
       const partyId = parseInt(req.params.partyId);
