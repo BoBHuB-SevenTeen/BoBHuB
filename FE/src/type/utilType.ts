@@ -16,6 +16,15 @@ export const initialShopState = {
   deletedAt: '',
 };
 
+export const initialShops = {
+  name: '',
+  category: '',
+  description: '',
+  food: [{ name: '', picture: '' }],
+  avgStar: 0,
+  shopId: 0,
+};
+
 export type ProfilerProps = {
   id: string;
   phase: string;

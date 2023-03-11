@@ -94,7 +94,6 @@ CREATE TABLE IF NOT EXISTS `party` (
   `userId` INTEGER NOT NULL, 
   `partyLimit` INTEGER NOT NULL DEFAULT 4, 
   `timeLimit` INTEGER NOT NULL DEFAULT 30, 
-  `likedNum` INTEGER NOT NULL DEFAULT 0, 
   `isComplete` BOOLEAN NOT NULL DEFAULT FALSE, 
   `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
   `updatedAt` DATETIME, 
@@ -105,6 +104,12 @@ CREATE TABLE IF NOT EXISTS `party` (
   ), 
   FOREIGN KEY (`shopId`) REFERENCES `shop` (`shopId`), 
   FOREIGN KEY (`userId`) REFERENCES `user` (`userId`) ON DELETE NO ACTION ON UPDATE CASCADE
+);
+CREATE TABLE IF NOT EXISTS `like_num` (
+  `partyId` INTEGER NOT NULL, 
+  `likedNum` INTEGER NOT NULL DEFAULT 0, 
+  `partyLimit` INTEGER NOT NULL DEFAULT 4, 
+  FOREIGN KEY (`partyId`) REFERENCES `party` (`partyId`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE IF NOT EXISTS `pick` (
   `pickId` INTEGER NOT NULL auto_increment, 
@@ -136,7 +141,7 @@ AFTER INSERT
 ON pick
 FOR EACH ROW 
 BEGIN
- UPDATE party SET likedNum = likedNum +1 WHERE new.partyId = party.partyId;
+ UPDATE like_num SET likedNum = likedNum +1 WHERE new.partyId = like_num.partyId;
 END $$
   
 CREATE TRIGGER down_likedNum
@@ -144,9 +149,9 @@ BEFORE delete
 ON pick
 FOR EACH ROW 
 BEGIN
- UPDATE party SET likedNum = likedNum -1 WHERE old.partyId = party.partyId;
+ UPDATE like_num SET likedNum = likedNum -1 WHERE old.partyId = like_num.partyId;
 END $$ 
-  
+
 CREATE TRIGGER party_isComplete
 BEFORE UPDATE
 ON party

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store/store';
 import MyParty from './MyParty';
 import styled from 'styled-components';
-import { theme } from './../styles/theme';
+import  theme  from './../styles/theme';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';

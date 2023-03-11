@@ -3,25 +3,33 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
 import { useCallback, useState } from 'react';
 import TextArea from './TextArea';
-import { deleteComment } from '../foodDetailApi';
 import React from 'react';
 import type { Tcomment } from '../../../type/commentType';
 import * as S from '../styles/commentListStyle';
 import useUser from './../../../queries/useUserQuery';
+import { useDeleteComment } from '../../../queries/comment/useDeleteComment';
 
 interface CommentList {
   commentProp: Tcomment;
-  updateCommentState: () => void;
+  shopId: number;
 }
 
 const CommentList = ({
   commentProp: { commentId, userId, content, star, profile, nickname },
-  updateCommentState,
+  shopId,
 }: CommentList) => {
   const [canRevise, setRevise] = useState<boolean>(false);
   const [canReadOnly, setReadOnly] = useState<boolean>(true);
   const [commentStar, setCommentStar] = useState<number | null>(star);
   const { data: user, isSuccess } = useUser();
+  const onSuccessCb = () => {
+    alert('댓글을 삭제하였습니다.');
+  };
+  const onErrorCb = () => {
+    alert('요청에 실패하였습니다.');
+  };
+
+  const { mutation: deleteComment } = useDeleteComment({ onSuccessCb, onErrorCb, shopId });
 
   const handleRevise = (e: React.MouseEvent<HTMLButtonElement>) => {
     setRevise(true);
@@ -31,9 +39,8 @@ const CommentList = ({
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) =>
     setCommentStar(newValue);
 
-  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, commentId: number) => {
-    await deleteComment(commentId);
-    updateCommentState();
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, commentId: number) => {
+    deleteComment.mutate(commentId);
   };
 
   const updateRevise = useCallback((bool: boolean) => {
@@ -62,6 +69,7 @@ const CommentList = ({
           />
           <TextArea
             commentId={commentId}
+            shopId={shopId}
             commentStar={commentStar}
             content={content}
             canRevise={canRevise}

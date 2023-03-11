@@ -35,15 +35,19 @@ export const Title = styled.div`
 type MenuCardProps = {
   width: string;
   size: string;
+  padding?: string;
+  margin?: string;
+  fontSize?: string;
+  flex?: string;
 };
 
 export const MenuCard = styled(Card)<MenuCardProps>`
   width: ${(props) => props.width};
   font-size: ${(props) => props.size};
-  padding: 20px;
-  margin-left: 30px;
-  font-size: 20px;
-  flex: 2;
+  padding: ${(props) => props.padding};
+  margin: ${(props) => props.margin};
+  font-size: ${({ theme }) => theme.fontSize.subTitle};
+  flex: ${(props) => props.flex};
   p {
     margin-bottom: 20px;
   }

@@ -1,11 +1,13 @@
 import React from 'react';
 import { useState } from 'react';
+import { usePatchComment } from '../../../queries/comment/usePatchComment';
 import { NullableNum } from '../../../type/utilType';
-import { patchComment } from '../foodDetailApi';
 import * as S from '../styles/textAreaStyle';
+import { inValidateText } from '../util/foodDetailUtil';
 
 interface TextAreaProps {
   commentId: number;
+  shopId: number;
   commentStar: NullableNum;
   content: string;
   canRevise: boolean;
@@ -15,6 +17,7 @@ interface TextAreaProps {
 
 const TextArea = ({
   commentId,
+  shopId,
   commentStar,
   content,
   canRevise,
@@ -23,27 +26,27 @@ const TextArea = ({
 }: TextAreaProps) => {
   const [textValue, setTextValue] = useState<string>(content);
 
+  const onSuccessCb = () => {
+    updateRevise(false);
+    updateReadOnly(true);
+  };
+
+  const onErrorCb = () => {
+    alert('요청에 실패하였습니다.');
+  };
+  const { mutation: patchComment } = usePatchComment({ onSuccessCb, onErrorCb, shopId });
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.target.value);
   };
 
-  const reviseEnd = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (textValue === '') {
-      alert('댓글을 입력해주세요');
-      return;
-    }
-    if (commentStar === null) {
-      alert('별점을 입력해주세요');
-      return;
-    }
-    const reviseComment = {
+  const reviseEnd = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (inValidateText(textValue, commentStar)) return;
+    const revisedComment = {
       star: commentStar,
       content: textValue,
     };
-
-    await patchComment(reviseComment, commentId);
-    updateRevise(false);
-    updateReadOnly(true);
+    patchComment.mutate({ comment: revisedComment, commentId });
   };
 
   return (

@@ -8,6 +8,9 @@ import * as S from '../styles/contentStyle';
 import useUser from './../../../queries/useUserQuery';
 import useActiveParties from './../../../queries/useActivePartyQuery';
 import useMyParties from './../../../queries/useMyPartiesQuery';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { PostParty } from '../../../type/partyType';
+import { useMutateParty } from '../../../queries/party/useMutateParty';
 
 interface Contentype {
   shop: Shops;
@@ -20,12 +23,22 @@ const Content = ({ shop }: Contentype) => {
   const { data: user, isSuccess: isUserSuccess } = useUser();
   const { data: activePartyList, isSuccess: isActivePartiesSuccess } = useActiveParties();
   const [isJoined, setIsJoined] = useState(false);
-
   const { data: myPartyList, isSuccess: isMyPartiesSuccess } = useMyParties();
   const [gathering, setGathering] = useState(false);
   const currentParty = activePartyList
     ?.filter((party) => party.likedNum !== party.partyLimit)
     .find((party) => party.shopId === shop.shopId);
+
+  const onSuccessCb = () => {
+    socket.emit('createParty', '생성요청');
+    alert('식당모임이 생성되었습니다.');
+  };
+
+  const onErrorCb = () => {
+    alert('요청에 실패하였습니다.');
+  };
+
+  const { mutation: mutateParty } = useMutateParty({ onSuccessCb, onErrorCb });
 
   useEffect(() => {
     if (currentParty) {
@@ -49,11 +62,8 @@ const Content = ({ shop }: Contentype) => {
       partyLimit,
       timeLimit: 30,
     };
-    const message = await postParty(party);
-    if (message) {
-      socket.emit('createParty', '생성요청');
-      alert('식당모임이 생성되었습니다.');
-    }
+
+    mutateParty.mutate(party);
   };
 
   const clickJoinButton = (partyId: number) => {
@@ -88,7 +98,7 @@ const Content = ({ shop }: Contentype) => {
       </S.TitleContainer>
 
       <S.MenuContainer>
-        <S.MenuCard size={'15px'} width={'20vw'}>
+        <S.MenuCard size={'15px'} width={'20vw'} padding="20px" margin="20px" flex="2">
           <p className="description">{shop.description}</p>
           <p>{`거리 : 걸어서 ${shop.distance}분 거리`}</p>
           <S.ATag href={`${BASE_URL}${shop.address}`} target="_blank" rel="noreferrer">

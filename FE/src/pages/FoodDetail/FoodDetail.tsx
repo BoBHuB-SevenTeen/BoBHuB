@@ -3,109 +3,37 @@ import Comment from './components/Comment';
 import CommentList from './components/CommentList';
 import Footer from '../../components/Footer';
 import NavBar from '../../components/NavBar';
-import { initialShopState } from '../../type/utilType';
 import Content from './components/Content';
 import DetailSlider from './components/DetailSlider';
-import { getComment, getShop, getMenu } from './foodDetailApi';
 import { useParams } from 'react-router';
-import React from 'react';
-import { Menu } from '../../type/menuType';
-import type { Tcomment } from '../../type/commentType';
 import * as S from './styles/foodDetailStyle';
-import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import * as API from '../../api/API';
+import { useCommentQuery } from '../../queries/comment/useCommentQuery';
+import { useMenuQuery } from '../../queries/menu/useMenuQuery';
+import { makeImgArr } from './util/foodDetailUtil';
+import { useShopQuery } from '../../queries/shop/useShopQuery';
 
 const FoodDetail = () => {
-  const [shopState, setShopState] = useState(initialShopState);
-  const [commentState, setCommentState] = useState<Tcomment[]>([]);
-  const [menuState, setMenuState] = useState<Menu[]>([]);
-  // const [isLoading, setLoading] = useState<boolean>(true);
-  const [update, setUpdated] = useState<boolean>(false);
   const scrollRef = useRef<HTMLElement>(null);
   const shopId = Number(useParams().id);
 
-  const fetchComments = async (shopId: number) => {
-    return await API.get(`/api/comments?shopId=${shopId}`);
-  };
-
-  const { isLoading, isError, data, error } = useQuery<Tcomment[], AxiosError>(
-    ['comment', shopId],
-    () => fetchComments(shopId),
-  );
-
-  console.log('data', data, 'isError', isError);
-
-  const updateCommentState = useCallback(() => {
-    setUpdated((current) => !current);
-  }, []);
-
-  const fetchCommentState = async (shopId: number) => {
-    const commentState = await getComment(shopId);
-    setCommentState(commentState);
-  };
-
-  const fetchShopState = async (shopId: number) => {
-    const [shopState, menuState] = await Promise.all([getShop(shopId), getMenu(shopId)]);
-    setShopState(shopState);
-    setMenuState(menuState);
-  };
-
-  const fetchInitialData = async () => {
-    await fetchCommentState(shopId);
-    await fetchShopState(shopId);
-    // setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
-  useEffect(() => {
-    fetchCommentState(shopId);
-  }, [update]);
-
-  const makeImgArr = useCallback(() => {
-    const imgArr = [];
-    imgArr.push(shopState.shopPicture);
-    imgArr.push(shopState.menu);
-    menuState.forEach((menu) => {
-      imgArr.push(menu.picture);
-    });
-
-    return [...imgArr];
-  }, [shopState, menuState]);
-
-  const imageArr = useMemo(() => makeImgArr(), [makeImgArr]);
+  const { commentState } = useCommentQuery(shopId);
+  const { menuState } = useMenuQuery(shopId);
+  const { shopState } = useShopQuery(shopId);
 
   return (
     <S.Pagecontainer ref={scrollRef}>
-      {isLoading ? (
-        'isLoading...'
-      ) : (
-        <>
-          <NavBar />
-          <DetailSlider imageArr={imageArr} />
-          {<Content shop={shopState} />}
-          <Comment
-            updateCommentState={updateCommentState}
-            shopId={shopState.shopId}
-            scrollRef={scrollRef}
-          />
-          <S.CommentContainer>
-            {commentState.map((comment) => (
-              <CommentList
-                key={comment.commentId}
-                commentProp={comment}
-                updateCommentState={updateCommentState}
-              />
-            ))}
-          </S.CommentContainer>
-          <Footer />
-        </>
-      )}
+      <NavBar />
+      <DetailSlider imageArr={makeImgArr(shopState, menuState)} />
+      <Content shop={shopState} />
+      <Comment shopId={shopState?.shopId} scrollRef={scrollRef} />
+      <S.CommentContainer>
+        {commentState?.map((comment) => (
+          <CommentList key={comment.commentId} commentProp={comment} shopId={shopId} />
+        ))}
+      </S.CommentContainer>
+      <Footer />
     </S.Pagecontainer>
   );
 };
 
-export default React.memo(FoodDetail);
+export default FoodDetail;

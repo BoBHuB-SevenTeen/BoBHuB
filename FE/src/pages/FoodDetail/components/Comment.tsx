@@ -1,20 +1,19 @@
 import { Button, Typography, Rating } from '@mui/material';
 import React, { useState } from 'react';
-import { postComment } from '../foodDetailApi';
 import type { RootState } from '../../../store/store';
 import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
 import * as S from '../styles/commentStyle';
+import { useCreateComment } from '../../../queries/comment/useCreateComment';
 
 interface commnetProps {
-  updateCommentState: () => void;
-  shopId: number;
+  shopId: number | undefined;
   scrollRef: React.RefObject<HTMLElement>;
 }
 
 type createCommentType = React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>;
 
-const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
+const Comment = ({ shopId, scrollRef }: commnetProps) => {
   const [content, setContent] = useState<string>('');
   const [starValue, setStarValue] = useState<number | null>(5);
   const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin) as boolean;
@@ -22,7 +21,18 @@ const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) => setStarValue(newValue);
   const fieldChange = (e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value);
 
-  const createComment = async (e: createCommentType) => {
+  const onSuccessCb = () => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    setContent('');
+  };
+
+  const onErrorCb = () => {
+    alert('댓글을 이미 작성하셨습니다.');
+  };
+
+  const { mutation: createComment } = useCreateComment({ onSuccessCb, onErrorCb, shopId });
+
+  const handleCreateComment = async (e: createCommentType) => {
     e.preventDefault();
     if (canWriteComment(isLogin, content, starValue)) return;
     const newComment = {
@@ -30,16 +40,12 @@ const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
       content,
       star: starValue,
     };
-    const response = await postComment(newComment);
-    if (response?.message) {
-      updateCommentState();
-      scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-      setContent('');
-    }
+
+    createComment.mutate(newComment);
   };
 
   return (
-    <S.CommentContainer onSubmit={createComment}>
+    <S.CommentContainer>
       <S.RatingContainer>
         <Typography component="legend">식당은 어땠나요?</Typography>
         <Rating name="simple-controlled" value={starValue} onChange={ratingChange} />
@@ -51,7 +57,7 @@ const Comment = ({ updateCommentState, shopId, scrollRef }: commnetProps) => {
         value={content}
         onChange={fieldChange}
       />
-      <Button variant="outlined" onClick={createComment}>
+      <Button variant="outlined" onClick={handleCreateComment}>
         Enter
       </Button>
     </S.CommentContainer>
