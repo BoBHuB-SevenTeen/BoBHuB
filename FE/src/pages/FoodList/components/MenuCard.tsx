@@ -6,6 +6,7 @@ import { useState, useEffect, useContext } from 'react';
 import { SocketContext } from '../../../socket/SocketContext';
 import { isFullParty } from '../../../util/isFullParty';
 import useActiveParties from '../../../queries/useActivePartyQuery';
+import { useLikedNumArr } from '../../../queries/party/useLikedNumArr';
 
 type ShopListProps = {
   name: string; //식당명
@@ -40,6 +41,11 @@ const MenuCard = ({
 }: ShopListProps) => {
   const navigate = useNavigate();
   const { data: activeParties, isSuccess, refetch } = useActiveParties();
+  const res = useLikedNumArr(activeParties);
+  useEffect(() => {
+    // res.forEach()
+    console.log(res);
+  }, [activeParties, res]);
 
   const socket = useContext(SocketContext);
 
@@ -56,7 +62,9 @@ const MenuCard = ({
   useEffect(() => {
     if (
       isSuccess &&
-      activeParties.filter((party) => !isFullParty(party)).find((party) => party.shopId === shopId)
+      activeParties
+        .filter((party) => !isFullParty(res.get(party.partyId)!, party.partyLimit))
+        .find((party) => party.shopId === shopId)
     ) {
       setGatherting(true);
     } else {

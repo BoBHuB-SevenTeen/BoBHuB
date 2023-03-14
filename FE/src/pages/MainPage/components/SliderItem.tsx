@@ -8,6 +8,7 @@ import StarRateIcon from '@mui/icons-material/StarRate';
 import LockIcon from '@mui/icons-material/Lock';
 import useMyParties from '../../../queries/useMyPartiesQuery';
 import useUser from '../../../queries/useUserQuery';
+import { useLikedNum } from './../../../queries/party/useLikedNum';
 
 const ItemContainer = styled.div`
   background-color: white;
@@ -61,6 +62,7 @@ const SliderItem = ({ party, index, slideIndex }: SliderItemProps) => {
   const { data: user, isSuccess: fetchingUserSuccess } = useUser();
   const [isJoined, setIsJoined] = useState(false);
   const { data: myPartyList, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
+  const { likedNum } = useLikedNum(party.partyId);
 
   useEffect(() => {
     if (
@@ -91,7 +93,7 @@ const SliderItem = ({ party, index, slideIndex }: SliderItemProps) => {
         <div className="party_info">
           <span>
             <div className="likedNum">
-              모집 현황 : {party.likedNum} 명 / 총 {party.partyLimit} 명
+              모집 현황 : {likedNum?.likedNum} 명 / 총 {party.partyLimit} 명
             </div>
           </span>
           <span style={{ margin: '0 0 0 50px' }}>

@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import * as S from './SliderSection.style';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -6,11 +6,19 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import SliderItem from './SliderItem';
 import useActiveParties from '../../../queries/useActivePartyQuery';
 import useUser from '../../../queries/useUserQuery';
+import { useLikedNumArr } from './../../../queries/party/useLikedNumArr';
+import { Party } from '../Type';
 
 export default function SimpleSlider() {
   const showMaxCnt = 3;
   const { data: activeParties, isSuccess: fetchingActivePartySuccess } = useActiveParties();
   const { data: user, isSuccess: fetchingUserSuccess } = useUser();
+
+  const res = useLikedNumArr(activeParties);
+  useEffect(() => {
+    // res.forEach()
+    console.log(res);
+  }, [activeParties, res]);
 
   const settings = {
     dots: false,
@@ -19,7 +27,8 @@ export default function SimpleSlider() {
     centerMode: true,
     infinite:
       fetchingActivePartySuccess &&
-      activeParties.filter((party) => party.likedNum !== party.partyLimit).length > showMaxCnt,
+      activeParties.filter((party) => res.get(party.partyId) !== party.partyLimit).length >
+        showMaxCnt,
     speed: 500,
     slidesToShow: showMaxCnt,
     slidesToScroll: 1,
@@ -61,7 +70,9 @@ export default function SimpleSlider() {
     <Fragment>
       {fetchingActivePartySuccess && (
         <S.Div
-          length={activeParties.filter((party) => party.likedNum !== party.partyLimit).length}
+          length={
+            activeParties.filter((party) => res.get(party.partyId) !== party.partyLimit).length
+          }
           max={showMaxCnt}>
           {fetchingUserSuccess ? (
             <S.TitleBox>
@@ -80,7 +91,7 @@ export default function SimpleSlider() {
             {activeParties.length >= 4 && (
               <S.StyledSlider {...settings}>
                 {activeParties
-                  .filter((party) => party.likedNum !== party.partyLimit)
+                  .filter((party) => res.get(party.partyId) !== party.partyLimit)
                   .map((party, index) => (
                     <div key={party.partyId}>
                       <SliderItem
@@ -96,7 +107,7 @@ export default function SimpleSlider() {
             {activeParties.length <= 3 && (
               <div>
                 {activeParties
-                  .filter((party) => party.likedNum !== party.partyLimit)
+                  .filter((party) => res.get(party.partyId) !== party.partyLimit)
                   .map((party, index) => (
                     <div key={party.partyId}>
                       <SliderItem
