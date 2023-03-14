@@ -7,13 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store/store';
 import MyParty from './MyParty';
 import styled from 'styled-components';
-import  theme  from './../styles/theme';
+import theme from './../styles/theme';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import UserGuide from './UserGuide/UserGuide';
-import { getMyPartyList } from './../store/partySlice';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import useMyParties from '../queries/useMyPartiesQuery';
@@ -83,24 +82,16 @@ const NavBar = () => {
     }
   }, [isLogin]);
 
-  useEffect(() => {
-    if (fetchingMyPartiesSuccess && myPartyList.find((party) => isFullParty(party))) {
-      setAlarm(true);
-    }
-  }, [myPartyList]);
-
   const handleOpenToggle = () => setOpen(!open);
 
   const logout = async () => {
     const res = await get('/api/auth/logout');
     dispatch(logoutAction());
     queryClient.invalidateQueries(['user']);
-    // window.localStorage.clear();
   };
 
   const handleLikedParty = () => {
     handleOpenToggle();
-    dispatch(getMyPartyList());
   };
 
   return (
@@ -111,7 +102,7 @@ const NavBar = () => {
         position: location.pathname !== '/' ? 'static' : 'absolute',
       }}>
       <Toolbar>
-        <Snackbar
+        {/* <Snackbar
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           open={alarm}
           onClose={closeAlarm}
@@ -120,7 +111,7 @@ const NavBar = () => {
           <Alert onClose={closeAlarm} severity="success" sx={{ width: '100%' }}>
             모임이 활성화 됐습니다. 채팅창을 확인하세요!
           </Alert>
-        </Snackbar>
+        </Snackbar> */}
         <BasicLink to="/">
           <Logo src={logo} alt="BoBHuB logo" />
         </BasicLink>
