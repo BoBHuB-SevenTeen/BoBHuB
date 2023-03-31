@@ -17,7 +17,7 @@ class PartyModel {
       await conn.beginTransaction();
       const [createResult] = await conn.query(query1);
 
-      const query2 = `INSERT INTO like_num (partyId, partyLimit) 
+      const query2 = `INSERT INTO liked_num (partyId, partyLimit) 
       VALUES(?, ?)`;
       const params2 = [createResult.insertId, partyDTO.partyLimit];
       await conn.query(query2, params2);
@@ -113,7 +113,7 @@ class PartyModel {
       await conn.beginTransaction();
       const [updateResult] = await conn.query(query1);
       if (newPartyDTO.partyLimit) {
-        const query2 = `UPDATE like_num SET partyLimit=? WHERE partyId=?`;
+        const query2 = `UPDATE liked_num SET partyLimit=? WHERE partyId=?`;
         const params2 = [newPartyDTO.partyLimit, partyDTO.partyId];
         logger.info(query2);
         await conn.query(query2, params2);
