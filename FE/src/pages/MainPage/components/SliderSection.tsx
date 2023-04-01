@@ -11,7 +11,7 @@ import { useLikedNumArr } from './../../../queries/party/useLikedNumArr';
 export default function SimpleSlider() {
   const showMaxCnt = 3;
   const { data: activeParties, isSuccess: fetchingActivePartySuccess } = useActiveParties();
-  const { data: user, isSuccess: fetchingUserSuccess } = useUser();
+  const { data: user, isSuccess: fetchingUserSuccess, isError } = useUser();
 
   const res = useLikedNumArr(activeParties);
 
@@ -63,20 +63,19 @@ export default function SimpleSlider() {
 
   return (
     <Fragment>
-      {fetchingActivePartySuccess && (
-        <S.Div
-          length={
-            activeParties.filter((party) => res.get(party.partyId) !== party.partyLimit).length
-          }
-          max={showMaxCnt}>
+      <S.Div>
+        <S.TitleBox>
           {fetchingUserSuccess ? (
-            <S.TitleBox>
+            <p>
               밥메이트들이 <span style={{ color: '#E59A59' }}>{user.name}</span>님을 기다리고
               있어요!
-            </S.TitleBox>
+            </p>
           ) : (
             <div className="login_msg">로그인 후 이용해주세요!</div>
           )}
+        </S.TitleBox>
+
+        {fetchingActivePartySuccess && (
           <div>
             {activeParties.length === 0 && (
               <S.LabelContainer>
@@ -84,7 +83,13 @@ export default function SimpleSlider() {
               </S.LabelContainer>
             )}
             {activeParties.length >= 4 && (
-              <S.StyledSlider {...settings}>
+              <S.StyledSlider
+                {...settings}
+                length={
+                  activeParties.filter((party) => res.get(party.partyId) !== party.partyLimit)
+                    .length
+                }
+                max={showMaxCnt}>
                 {activeParties
                   .filter((party) => res.get(party.partyId) !== party.partyLimit)
                   .map((party, index) => (
@@ -116,8 +121,9 @@ export default function SimpleSlider() {
               </div>
             )}
           </div>
-        </S.Div>
-      )}
+        )}
+      </S.Div>
+      )
     </Fragment>
   );
 }

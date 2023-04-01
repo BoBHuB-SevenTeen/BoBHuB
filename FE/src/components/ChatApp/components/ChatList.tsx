@@ -1,7 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
 import { SocketContext } from '../../../socket/SocketContext';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store/store';
 import type { Party } from '../../../pages/MainPage/Type';
 import * as S from '../styles/chatListStyle';
 import { Title } from '../styles/chatStyle';
@@ -16,7 +14,6 @@ interface ChatListProps {
 const ChatList = ({ moveRoom }: ChatListProps) => {
   const socket = useContext(SocketContext);
   const { data: user, isSuccess: isUserSuccess } = useUser();
-  const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin);
   const { data: myPartyList, isSuccess: isPartiesSuccess } = useMyParties();
   const [completedParty, setCompletedParty] = useState<Party[]>([]);
   const res = useLikedNumArr(myPartyList);
@@ -40,7 +37,7 @@ const ChatList = ({ moveRoom }: ChatListProps) => {
     <>
       <Title>Chat Lists</Title>
       <S.ChatContainer>
-        {!isLogin ? (
+        {!isUserSuccess ? (
           <S.CursorDiv>"로그인을 해주세요"</S.CursorDiv>
         ) : completedParty.length === 0 ? (
           <S.CursorDiv>생성된 채팅방이 없습니다.</S.CursorDiv>

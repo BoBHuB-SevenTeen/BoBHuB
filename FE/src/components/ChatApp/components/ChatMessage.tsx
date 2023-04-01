@@ -1,4 +1,3 @@
-import { RootState } from '../../../store/store';
 import { MessageInfo } from '../chatAppApi';
 import * as S from '../styles/chatMessageStyle';
 import useUser from './../../../queries/useUserQuery';

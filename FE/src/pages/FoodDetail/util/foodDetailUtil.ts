@@ -2,8 +2,8 @@ import { Menu } from '../../../type/menuType';
 import { Shops } from '../../../type/shopType';
 import { NullableNum } from '../../../type/utilType';
 
-export const canWriteComment = (isLogin: boolean, content: string, starValue: NullableNum) => {
-  if (!isLogin) {
+export const canWriteComment = (isSuccess: boolean, content: string, starValue: NullableNum) => {
+  if (!isSuccess) {
     alert('로그인을 해주세요');
     return true;
   }

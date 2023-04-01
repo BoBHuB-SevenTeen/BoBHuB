@@ -7,7 +7,6 @@ import theme from './styles/theme';
 import { muitheme } from './styles/muiTheme';
 import { SocketContext, socket } from './socket/SocketContext';
 import GlobalFont from './styles/GlobalFont';
-import store from './store/store';
 import { Provider } from 'react-redux/es/exports';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -27,18 +26,16 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <MuiThemeProvider theme={muitheme}>
-          <ThemeProvider theme={theme}>
-            <SocketContext.Provider value={socket}>
-              <Router />
-              <ChatApp />
-              <GlobalStyle />
-              <GlobalFont />
-            </SocketContext.Provider>
-          </ThemeProvider>
-        </MuiThemeProvider>
-      </Provider>
+      <MuiThemeProvider theme={muitheme}>
+        <ThemeProvider theme={theme}>
+          <SocketContext.Provider value={socket}>
+            <Router />
+            <ChatApp />
+            <GlobalStyle />
+            <GlobalFont />
+          </SocketContext.Provider>
+        </ThemeProvider>
+      </MuiThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
     </QueryClientProvider>
   );

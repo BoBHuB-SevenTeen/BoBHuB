@@ -13,8 +13,6 @@ import Search from './components/Search';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer';
 import { SocketContext } from '../../socket/SocketContext';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/store';
 
 const FoodList = () => {
   const [searchInput, setSearchInput] = useState<string>('');
@@ -44,8 +42,6 @@ const FoodList = () => {
   const offset = (page - 1) * 9;
   const totalPage = Math.ceil(searchList.length / 9);
   const [getCategories, setGetCategories] = useState([]);
-  const socket = useContext(SocketContext);
-  const dispatch = useDispatch<AppDispatch>();
 
   const handleCategoryChange = (
     event: React.SyntheticEvent,

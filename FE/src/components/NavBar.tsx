@@ -3,8 +3,6 @@ import logo from '../assets/BoBHuB_logo.png';
 import title from '../assets/BoBHuB_textLogo.png';
 import { Link, useLocation } from 'react-router-dom';
 import React, { useEffect, Fragment, useState, useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../store/store';
 import MyParty from './MyParty';
 import styled from 'styled-components';
 import theme from './../styles/theme';
@@ -14,8 +12,6 @@ import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import UserGuide from './UserGuide/UserGuide';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import useMyParties from '../queries/useMyPartiesQuery';
-import { loginAction, logoutAction } from '../store/loginSlice';
 import useUser from '../queries/useUserQuery';
 import { get } from '../api/API';
 import { useQueryClient } from '@tanstack/react-query';
@@ -94,9 +90,6 @@ const NavBar = () => {
     };
   }, [socket, queryClient]);
 
-  const dispatch = useDispatch<AppDispatch>();
-
-  const isLogin = useSelector((state: RootState) => state.loginReducer.isLogin);
   const { data: user, isSuccess: fetchingUserSuccess, isError } = useUser();
 
   const location = useLocation();
@@ -105,22 +98,19 @@ const NavBar = () => {
   const handleClose = () => setModal(false);
   const closeAlarm = () => setAlarm(false);
 
-  if (fetchingUserSuccess) dispatch(loginAction());
-  else if (isError) dispatch(logoutAction());
-  else dispatch(logoutAction());
-
   useEffect(() => {
     if (open === true) {
       setOpen(false);
     }
-  }, [isLogin]);
+  }, [user]);
 
   const handleOpenToggle = () => setOpen(!open);
 
   const logout = async () => {
     const res = await get('/api/auth/logout');
-    dispatch(logoutAction());
     queryClient.invalidateQueries(['user']);
+    queryClient.invalidateQueries(['parties', 'active']);
+    queryClient.invalidateQueries(['parties', 'my']);
   };
 
   const handleLikedParty = () => {
@@ -162,7 +152,7 @@ const NavBar = () => {
               <Button color="inherit">관리자</Button>
             </BasicLink>
           )}
-          {isLogin ? (
+          {fetchingUserSuccess ? (
             <Fragment>
               <BasicLink to="/mypage">
                 <Button color="inherit">마이페이지</Button>
@@ -174,7 +164,7 @@ const NavBar = () => {
           ) : (
             <div></div>
           )}
-          {isLogin ? (
+          {fetchingUserSuccess ? (
             <BasicLink to="/">
               <Button onClick={logout} color="inherit">
                 로그아웃

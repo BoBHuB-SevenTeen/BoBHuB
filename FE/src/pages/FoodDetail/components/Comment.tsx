@@ -1,10 +1,9 @@
 import { Button, Typography, Rating } from '@mui/material';
 import React, { useState } from 'react';
-import type { RootState } from '../../../store/store';
-import { useSelector } from 'react-redux';
 import { canWriteComment } from '../util/foodDetailUtil';
 import * as S from '../styles/commentStyle';
 import { useCreateComment } from '../../../queries/comment/useCreateComment';
+import useUser from '../../../queries/useUserQuery';
 
 interface commnetProps {
   shopId: number | undefined;
@@ -16,7 +15,7 @@ type createCommentType = React.FormEvent<HTMLFormElement> | React.MouseEvent<HTM
 const Comment = ({ shopId, scrollRef }: commnetProps) => {
   const [content, setContent] = useState<string>('');
   const [starValue, setStarValue] = useState<number | null>(5);
-  const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin) as boolean;
+  const { isSuccess } = useUser();
 
   const ratingChange = (e: React.SyntheticEvent, newValue: number | null) => setStarValue(newValue);
   const fieldChange = (e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value);
@@ -34,7 +33,7 @@ const Comment = ({ shopId, scrollRef }: commnetProps) => {
 
   const handleCreateComment = async (e: createCommentType) => {
     e.preventDefault();
-    if (canWriteComment(isLogin, content, starValue)) return;
+    if (canWriteComment(isSuccess, content, starValue)) return;
     const newComment = {
       shopId,
       content,
