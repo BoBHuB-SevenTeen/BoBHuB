@@ -2,11 +2,11 @@ import { useState, Fragment } from 'react';
 import * as S from './SliderSection.style';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import SliderItem from './SliderItem';
 import useActiveParties from '../../../queries/useActivePartyQuery';
 import useUser from '../../../queries/useUserQuery';
 import { useLikedNumArr } from './../../../queries/party/useLikedNumArr';
+import ArrowButton from './ArrowButton';
 
 export default function SimpleSlider() {
   const showMaxCnt = 3;
@@ -32,16 +32,8 @@ export default function SimpleSlider() {
     autoplaySpeed: 3000,
     pauseOnHover: true,
     draggable: true,
-    nextArrow: (
-      <S.DivNext>
-        <MdKeyboardArrowRight />
-      </S.DivNext>
-    ),
-    prevArrow: (
-      <S.DivPre>
-        <MdKeyboardArrowLeft />
-      </S.DivPre>
-    ),
+    prevArrow: <ArrowButton direction="prev" asize="lg" color="black" />,
+    nextArrow: <ArrowButton direction="next" asize="lg" color="black" />,
     beforeChange: (current: number, next: number) => setSlideIndex(next),
     responsive: [
       {

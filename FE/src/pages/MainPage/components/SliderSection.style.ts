@@ -1,10 +1,72 @@
 import styled from 'styled-components';
 import Slider from 'react-slick';
+import { ButtonHTMLAttributes } from 'react';
+import { IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowBack } from 'react-icons/io';
 
 interface StyledSliderProps {
   length: number;
   max: number;
 }
+
+type Size = 'sm' | 'md' | 'lg';
+type Direction = 'prev' | 'next';
+type Color = 'black' | 'white';
+
+/**
+ * @type size {string} - 크기를 결정
+ * @type direction {string} - 이전, 다음 화살표 방향
+ * @type color {string} - color 지정
+ */
+export interface ArrowBaseButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  asize: Size;
+  direction: Direction;
+  color: Color;
+}
+type PickSizeColorProps = Pick<ArrowBaseButtonProps, 'asize' | 'color'>;
+
+export const getSize = (asize: Size) => {
+  switch (asize) {
+    case 'sm':
+      return '16px';
+    case 'md':
+      return '32px';
+    case 'lg':
+      return '100px';
+    default:
+      return '60px';
+  }
+};
+
+/**
+ * @property color {string} - color 지정
+ * @property size {string} - 크기를 결정
+ * @property direction {string} - 이전, 다음 화살표 방향
+ */
+export const ArrowBaseButton = styled.button<ArrowBaseButtonProps>`
+  z-index: 1;
+  color: ${({ color }) => color};
+  height: ${({ asize }) => getSize(asize)};
+  width: ${({ asize }) => getSize(asize)};
+  &:hover {
+    color: ${({ color }) => color};
+  }
+  /* ${({ direction }) => (direction === 'next' ? 'right: 25px' : 'left: 25px')} */
+`;
+
+export const NextArrow = styled(IoIosArrowForward)<PickSizeColorProps>`
+  width: 100px;
+  height: ${({ asize }) => getSize(asize)};
+  color: ${({ color }) => color};
+  font-size: 100px;
+`;
+
+export const PrevArrow = styled(IoIosArrowBack)<PickSizeColorProps>`
+  width: 100px;
+  height: ${({ asize }) => getSize(asize)};
+  color: ${({ color }) => color};
+  font-size: 100px;
+`;
 
 export const StyledSlider = styled(Slider)<StyledSliderProps>`
   height: 100%;
@@ -38,15 +100,19 @@ export const StyledSlider = styled(Slider)<StyledSliderProps>`
   .slick-prev::before,
   .slick-next::before {
     opacity: 0;
+    display: none;
   }
   .slick-slide div {
     cursor: pointer;
   }
-  .slick-prev:hover {
-    color: ${(props) => props.theme.colors.main};
-  }
+  .slick-prev:hover,
   .slick-next:hover {
     color: ${(props) => props.theme.colors.main};
+  }
+  .slick-prev,
+  .slick-next {
+    width: 100px !important;
+    height: 100px !important;
   }
 `;
 
@@ -61,15 +127,15 @@ export const LabelContainer = styled.div`
 `;
 
 export const DivNext = styled.div`
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  text-align: right;
-  font-size: 100px;
+  width: 30px !important;
+  height: 30px !important;
+  position: absolute !important;
+  text-align: right !important;
+  font-size: 100px !important;
   color: ${({ theme }) => theme.font.color.description};
-  right: 100px;
+  right: 100px !important;
   top: 120px;
-  line-height: 40px;
+  line-height: 40px !important;
 `;
 
 export const DivPre = styled.div`
@@ -80,8 +146,8 @@ export const DivPre = styled.div`
   left: 25px;
   z-index: 99;
   text-align: left;
-  font-size: 100px;
-  color: ${(props) => props.theme.colors.emphasis};
+  font-size: 100px !important;
+  color: ${(props) => props.theme.colors.emphasis} !important;
   line-height: 40px;
 `;
 
