@@ -22,7 +22,6 @@ const Foods = () => {
   const setFoodsData = async () => {
     const data: FoodType[] = await fetchFoodData();
     setFoods([...data]);
-    console.log(data);
   };
 
   useEffect(() => {

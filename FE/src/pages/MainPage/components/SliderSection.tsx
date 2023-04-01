@@ -1,4 +1,4 @@
-import { useState, Fragment, useEffect } from 'react';
+import { useState, Fragment } from 'react';
 import * as S from './SliderSection.style';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -7,7 +7,6 @@ import SliderItem from './SliderItem';
 import useActiveParties from '../../../queries/useActivePartyQuery';
 import useUser from '../../../queries/useUserQuery';
 import { useLikedNumArr } from './../../../queries/party/useLikedNumArr';
-import { Party } from '../Type';
 
 export default function SimpleSlider() {
   const showMaxCnt = 3;
@@ -15,10 +14,6 @@ export default function SimpleSlider() {
   const { data: user, isSuccess: fetchingUserSuccess } = useUser();
 
   const res = useLikedNumArr(activeParties);
-  useEffect(() => {
-    // res.forEach()
-    console.log(res);
-  }, [activeParties, res]);
 
   const settings = {
     dots: false,

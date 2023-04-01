@@ -24,8 +24,6 @@ const queryClient = new QueryClient({
   },
 });
 
-console.log(queryClient);
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,16 +1,14 @@
 import SelectTags from './SelectTags';
 import { useState, useContext, useEffect } from 'react';
 import React from 'react';
-import { postParty } from '../foodDetailApi';
 import { SocketContext } from '../../../socket/SocketContext';
 import { Shops } from '../../../type/shopType';
 import * as S from '../styles/contentStyle';
 import useUser from './../../../queries/useUserQuery';
 import useActiveParties from './../../../queries/useActivePartyQuery';
 import useMyParties from './../../../queries/useMyPartiesQuery';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { PostParty } from '../../../type/partyType';
 import { useMutateParty } from '../../../queries/party/useMutateParty';
+import { useLikedNumArr } from '../../../queries/party/useLikedNumArr';
 
 interface Contentype {
   shop: Shops;
@@ -21,12 +19,13 @@ const Content = ({ shop }: Contentype) => {
   const BASE_URL = 'https://map.naver.com/v5/entry/place/';
   const socket = useContext(SocketContext);
   const { data: user, isSuccess: isUserSuccess } = useUser();
-  const { data: activePartyList, isSuccess: isActivePartiesSuccess } = useActiveParties();
+  const { data: activePartyList } = useActiveParties();
   const [isJoined, setIsJoined] = useState(false);
   const { data: myPartyList, isSuccess: isMyPartiesSuccess } = useMyParties();
   const [gathering, setGathering] = useState(false);
+  const res = useLikedNumArr(activePartyList);
   const currentParty = activePartyList
-    ?.filter((party) => party.likedNum !== party.partyLimit)
+    ?.filter((party) => party.partyLimit !== res.get(party.partyId))
     .find((party) => party.shopId === shop.shopId);
 
   const onSuccessCb = () => {

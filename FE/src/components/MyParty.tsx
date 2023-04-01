@@ -2,7 +2,6 @@ import * as S from './MyParty.style';
 import { SocketContext } from '../socket/SocketContext';
 import { useContext, useEffect } from 'react';
 import useMyParties from '../queries/useMyPartiesQuery';
-import useUser from '../queries/useUserQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import MyPartyItem from './MyPartyItem';
 
@@ -15,21 +14,6 @@ const MyParty = ({ open, handleClose }: MyPartyProps) => {
   const socket = useContext(SocketContext);
   const { data: myPartyList, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    socket.on('joinSuccess', () => {
-      queryClient.invalidateQueries(['parties']);
-    });
-    socket.on('leaveSuccess', () => {
-      queryClient.invalidateQueries(['parties']);
-    });
-    socket.on('createSuccess', () => {
-      queryClient.invalidateQueries(['parties']);
-    });
-    socket.on('deleteSuccess', () => {
-      queryClient.invalidateQueries(['parties']);
-    });
-  }, []);
 
   return (
     <S.Container open={open}>

@@ -7,6 +7,7 @@ import * as S from '../styles/chatListStyle';
 import { Title } from '../styles/chatStyle';
 import useUser from './../../../queries/useUserQuery';
 import useMyParties from './../../../queries/useMyPartiesQuery';
+import { useLikedNumArr } from '../../../queries/party/useLikedNumArr';
 
 interface ChatListProps {
   moveRoom: (x: string) => void;
@@ -18,6 +19,7 @@ const ChatList = ({ moveRoom }: ChatListProps) => {
   const isLogin = useSelector<RootState>((state) => state.loginReducer.isLogin);
   const { data: myPartyList, isSuccess: isPartiesSuccess } = useMyParties();
   const [completedParty, setCompletedParty] = useState<Party[]>([]);
+  const res = useLikedNumArr(myPartyList);
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { roomname, partyid } = e.currentTarget.dataset;
@@ -28,11 +30,11 @@ const ChatList = ({ moveRoom }: ChatListProps) => {
     if (isUserSuccess && isPartiesSuccess) {
       socket.emit('nickname', user.name);
 
-      setCompletedParty(myPartyList.filter((party) => party.likedNum === party.partyLimit));
+      setCompletedParty(myPartyList.filter((party) => party.partyLimit === res.get(party.partyId)));
     }
 
     // 실제 room이 만들어진걸 확인함.
-  }, [user]);
+  }, [user, isUserSuccess, isPartiesSuccess, myPartyList, socket]);
 
   return (
     <>

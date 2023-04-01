@@ -73,7 +73,7 @@ const SliderItem = ({ party, index, slideIndex }: SliderItemProps) => {
     } else {
       setIsJoined(false);
     }
-  }, [myPartyList]);
+  }, [myPartyList, fetchingMyPartiesSuccess]);
 
   const handleLike = (partyId: number) => {
     if (fetchingUserSuccess) socket.emit('joinParty', partyId, user.userId);

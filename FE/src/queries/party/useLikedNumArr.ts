@@ -1,8 +1,7 @@
-import { useQueries, UseQueryResult } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { get } from '../../api/API';
 import { Party } from '../../pages/MainPage/Type';
 import { LikedNum } from '../../type/partyType';
-import { useEffect, useMemo } from 'react';
 
 function getPartyIdLikedNumMap(data: any[]): Map<number, number> {
   return data.reduce((result, item) => {

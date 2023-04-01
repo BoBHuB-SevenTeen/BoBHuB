@@ -42,10 +42,6 @@ const MenuCard = ({
   const navigate = useNavigate();
   const { data: activeParties, isSuccess, refetch } = useActiveParties();
   const res = useLikedNumArr(activeParties);
-  useEffect(() => {
-    // res.forEach()
-    console.log(res);
-  }, [activeParties, res]);
 
   const socket = useContext(SocketContext);
 
@@ -54,10 +50,6 @@ const MenuCard = ({
   };
 
   const [gathering, setGatherting] = useState(false);
-  useEffect(() => {
-    socket.on('joinSuccess', refetch);
-    socket.on('leaveSuccess', refetch);
-  }, []);
 
   useEffect(() => {
     if (

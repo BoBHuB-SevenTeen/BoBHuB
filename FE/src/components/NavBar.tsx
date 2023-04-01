@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Typography, Stack, Button } from '@mui/material';
 import logo from '../assets/BoBHuB_logo.png';
 import title from '../assets/BoBHuB_textLogo.png';
 import { Link, useLocation } from 'react-router-dom';
-import React, { useEffect, Fragment, useState } from 'react';
+import React, { useEffect, Fragment, useState, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store/store';
 import MyParty from './MyParty';
@@ -13,14 +13,13 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import UserGuide from './UserGuide/UserGuide';
-import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import useMyParties from '../queries/useMyPartiesQuery';
-import { isFullParty } from '../util/isFullParty';
 import { loginAction, logoutAction } from '../store/loginSlice';
 import useUser from '../queries/useUserQuery';
 import { get } from '../api/API';
 import { useQueryClient } from '@tanstack/react-query';
+import { SocketContext } from '../socket/SocketContext';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -59,12 +58,46 @@ const NavBar = () => {
   const [modal, setModal] = useState(false);
   const [alarm, setAlarm] = useState(false);
 
+  const socket = useContext(SocketContext);
+  const queryClient = useQueryClient();
+
+  const handleSocketEvent = (event: string, ...args: any[]) => {
+    switch (event) {
+      case 'joinSuccess':
+      case 'leaveSuccess':
+        if (args[0]?.partyId) {
+          queryClient.invalidateQueries({ queryKey: ['parties', 'likedNum', args[0].partyId] });
+        }
+        queryClient.invalidateQueries({ queryKey: ['parties', 'active'] });
+        queryClient.invalidateQueries({ queryKey: ['parties', 'my'] });
+        break;
+      case 'createSuccess':
+      case 'deleteSuccess':
+        queryClient.invalidateQueries({ queryKey: ['parties', 'active'] });
+        queryClient.invalidateQueries({ queryKey: ['parties', 'my'] });
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    socket.on('joinSuccess', (result) => handleSocketEvent('joinSuccess', result));
+    socket.on('leaveSuccess', (result) => handleSocketEvent('leaveSuccess', result));
+    socket.on('createSuccess', () => handleSocketEvent('createSuccess'));
+    socket.on('deleteSuccess', () => handleSocketEvent('deleteSuccess'));
+    return () => {
+      socket.off('joinSuccess');
+      socket.off('leaveSuccess');
+      socket.off('createSuccess');
+      socket.off('deleteSuccess');
+    };
+  }, [socket, queryClient]);
+
   const dispatch = useDispatch<AppDispatch>();
 
-  const { data: myPartyList, isSuccess: fetchingMyPartiesSuccess } = useMyParties();
   const isLogin = useSelector((state: RootState) => state.loginReducer.isLogin);
-  const { data: user, isSuccess: fetchingUserSuccess, isError, refetch } = useUser();
-  const queryClient = useQueryClient();
+  const { data: user, isSuccess: fetchingUserSuccess, isError } = useUser();
 
   const location = useLocation();
 
