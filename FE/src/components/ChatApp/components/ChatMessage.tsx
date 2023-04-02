@@ -1,4 +1,4 @@
-import { MessageInfo } from '../chatAppApi';
+import { MessageInfo } from '../../ChatApp/ChatAppApi';
 import * as S from '../styles/chatMessageStyle';
 import useUser from './../../../queries/useUserQuery';
 

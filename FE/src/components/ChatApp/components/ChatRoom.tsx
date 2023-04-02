@@ -3,8 +3,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { SocketContext } from '../../../socket/SocketContext';
 import ChatMessage from './ChatMessage';
-import { setLog } from '../chatAppApi';
-import { MessageInfo } from '../chatAppApi';
+import { setLog } from '../ChatAppApi';
+import { MessageInfo } from '../ChatAppApi';
 import * as S from '../styles/chatRoomStyle';
 import useUser from './../../../queries/useUserQuery';
 
